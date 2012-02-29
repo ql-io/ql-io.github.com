@@ -4,7 +4,7 @@
   <title><![CDATA[ql.io blog]]></title>
   <link href="http://ql-io.github.com/atom.xml" rel="self"/>
   <link href="http://ql-io.github.com/"/>
-  <updated>2012-02-29T11:48:34-08:00</updated>
+  <updated>2012-02-29T12:16:34-08:00</updated>
   <id>http://ql-io.github.com/</id>
   <author>
     <name><![CDATA[ql.io]]></name>
@@ -29,6 +29,9 @@ responses. Some of those also don&#8217;t work well with common HTTP infrastruct
 
 <p>In this post, I would like to show how you can, in four simple steps, use ql.io to hide the
 complexity of such APIs.</p>
+
+<!-- more -->
+
 
 <p>To illustrate, let me take eBay&#8217;s <a href="http://developer.ebay.com/DevZone/XML/docs/Reference/eBay/PlaceOffer.html">PlaceOffer
 API</a> that lets an eBay
@@ -242,6 +245,9 @@ scenes.</p>
 <p>In this post, I would like to present the baseline performance benchmarks of ql.io running on
 node.js 0.4.12. Though I have done some ad hoc tests in the last 2-3 months for hardware sizing
 purposes, this is my first systematic attempt.</p>
+
+<!-- more -->
+
 
 <p>Since this post is long, here is a quick summary for the &#8220;TL;DR&#8221;.</p>
 
