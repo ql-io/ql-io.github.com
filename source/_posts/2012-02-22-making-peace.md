@@ -16,6 +16,8 @@ responses. Some of those also don't work well with common HTTP infrastructure li
 In this post, I would like to show how you can, in four simple steps, use ql.io to hide the
 complexity of such APIs.
 
+<!-- more -->
+
 To illustrate, let me take eBay's [PlaceOffer
 API](http://developer.ebay.com/DevZone/XML/docs/Reference/eBay/PlaceOffer.html) that lets an eBay
 buyer place an offer for an item listed on eBay. This example may be more complex than other similar

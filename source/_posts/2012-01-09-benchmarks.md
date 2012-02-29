@@ -14,6 +14,8 @@ In this post, I would like to present the baseline performance benchmarks of ql.
 node.js 0.4.12. Though I have done some ad hoc tests in the last 2-3 months for hardware sizing
 purposes, this is my first systematic attempt.
 
+<!-- more -->
+
 Since this post is long, here is a quick summary for the "TL;DR".
 
 * For simple scripts - such a query using a `select` statement to get data from an HTTP API, ql.io
