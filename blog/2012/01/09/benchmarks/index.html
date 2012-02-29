@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>My Octopress Blog</title>
+  <title>ql.io Baseline Benchmarks - My Octopress Blog</title>
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="Once in a while you come across an HTTP API that uses HTTP in complicated and incorrect ways. There
-are many examples of this on the Web today &hellip;">
+  <meta name="description" content="One of the key visible benefits of ql.io is that it eliminates the code noise that
+is common in writing HTTP client apps. As a DSL for writing HTTP &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ are many examples of this on the Web today &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://ql-io.github.com">
+  <link rel="canonical" href="http://ql-io.github.com/blog/2012/01/09/benchmarks">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -63,365 +63,12 @@ are many examples of this on the Web today &hellip;">
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2012/02/22/making-peace/">Making Peace With HTTP APIs</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-02-22T00:00:00-08:00" pubdate data-updated="true">Feb 22<span>nd</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Once in a while you come across an HTTP API that uses HTTP in complicated and incorrect ways. There
-are many examples of this on the Web today including those from
-<a href="http://developer.ebay.com/devzone/xml/docs/reference/ebay/GetMyeBayBuying.html">eBay</a>,
-<a href="http://docs.amazonwebservices.com/amazonswf/latest/developerguide/UsingJSON-swf.html">Amazon</a>,
-<a href="http://code.google.com/apis/friendconnect/docs/opensocial_rest_rpc.html">Google</a>,
-<a href="http://www.bing.com/toolbox/bingdeveloper/">Microsoft</a> and many many others. These can be hard to
-use as they require you to follow proprietary styles for constructing requests and parsing
-responses. Some of those also don&#8217;t work well with common HTTP infrastructure like caches.</p>
-
-<p>In this post, I would like to show how you can, in four simple steps, use ql.io to hide the
-complexity of such APIs.</p>
-
-<p>To illustrate, let me take eBay&#8217;s <a href="http://developer.ebay.com/DevZone/XML/docs/Reference/eBay/PlaceOffer.html">PlaceOffer
-API</a> that lets an eBay
-buyer place an offer for an item listed on eBay. This example may be more complex than other similar
-APIs that you have encoutered, but it helps me drive the point.</p>
-
-<p>This API requires you to send a POST request with some custom headers and an XML document in the
-body.</p>
-
-<pre><code>POST /ws/api.dll HTTP/1.1
-Host: api.ebay.com/ws/api.dll
-Content-Type: application/xml; charset=UTF-8
-X-EBAY-API-DEV-NAME: developer ID
-X-EBAY-API-APP-NAME: app ID
-X-EBAY-API-CERT-NAME: cert ID,
-X-EBAY-API-CALL-NAME: PlaceOffer
-X-EBAY-API-COMPATIBILITY-LEVEL: version
-X-EBAY-API-SITEID: site ID
-</code></pre>
-
-<p>See <a href="http://tinyurl.com/76q6e7q">developer docs</a> for more details of these headers.</p>
-
-<p>The body of the request is an XML document. An example is below.</p>
-
-<pre><code>&lt;PlaceOfferRequest xmlns="urn:ebay:apis:eBLBaseComponents"&gt;
-  &lt;ErrorLanguage&gt;en_US&lt;/ErrorLanguage&gt;
-  &lt;EndUserIP&gt;192.168.255.255&lt;/EndUserIP&gt;
-  &lt;ItemID&gt;110096039601&lt;/ItemID&gt;
-  &lt;Offer&gt;
-    &lt;Action&gt;Bid&lt;/Action&gt;
-    &lt;MaxBid currencyID="USD"&gt;20.00&lt;/MaxBid&gt;
-    &lt;Quantity&gt;1&lt;/Quantity&gt;
-  &lt;/Offer&gt;
-  &lt;RequesterCredentials&gt;
-    &lt;eBayAuthToken&gt;ABC...123&lt;/eBayAuthToken&gt;
-  &lt;/RequesterCredentials&gt;
-  &lt;WarningLevel&gt;High&lt;/WarningLevel&gt;
-&lt;/PlaceOfferRequest&gt;
-</code></pre>
-
-<p>A response from this API looks like the following:</p>
-
-<pre><code>&lt;PlaceOfferResponse xmlns="urn:ebay:apis:eBLBaseComponents"&gt;
-  &lt;Timestamp&gt;2012-02-03T18:06:51.230Z&lt;/Timestamp&gt;
-  &lt;Ack&gt;Success&lt;/Ack&gt;
-  &lt;Version&gt;757&lt;/Version&gt;
-  &lt;Build&gt;E757_CORE_BUNDLED_14364711_R1&lt;/Build&gt;
-  &lt;UsageData&gt;MTMyOTUyMTQ2LzE1MzczOw**&lt;/UsageData&gt;
-  &lt;SellingStatus&gt;
-    &lt;ConvertedCurrentPrice currencyID="USD"&gt;1.0&lt;/ConvertedCurrentPrice&gt;
-    &lt;CurrentPrice currencyID="USD"&gt;1.0&lt;/CurrentPrice&gt;
-    &lt;HighBidder&gt;
-      &lt;UserID&gt;testuser_bountifulbuyer&lt;/UserID&gt;
-    &lt;/HighBidder&gt;
-    &lt;MinimumToBid currencyID="USD"&gt;1.25&lt;/MinimumToBid&gt;
-  &lt;/SellingStatus&gt;
-&lt;/PlaceOfferResponse&gt;
-</code></pre>
-
-<p>Here is how you can use ql.io to simplify this.</p>
-
-<h3>Step 0: Create an App</h3>
-
-<p>Create a ql.io app.</p>
-
-<pre><code>mkdir myapp
-cd myapp
-curl https://raw.github.com/ql-io/ql.io/master/modules/template/init.sh | bash
-bin/start.sh
-</code></pre>
-
-<p>See <a href="http://ql.io/docs">docs</a> for more details.</p>
-
-<h3>Step 1: Create a Table</h3>
-
-<p>Place the following in <code>tables/placeoffer.ql</code>.</p>
-
-<script src="https://gist.github.com/1886983.js?file=gistfile1.sql"></script>
-
-
-<p>This step binds the API into the ql.io runtime so that you can use ql.io&#8217;s DSL to send requests
-and process responses.</p>
-
-<h3>Step 2: Describe the Shape of the Request Body</h3>
-
-<p>Place the following in <code>tables/placeoffer.xml.mu</code>.</p>
-
-<script src="https://gist.github.com/1886988.js?file=gistfile1.xml"></script>
-
-
-<p>This is just a mustache template. You can use <a href="http://embeddedjs.com/">EJS</a> too if you like.</p>
-
-<h3>Step 3: Create a Route</h3>
-
-<p>Place the following in <code>routes/placeoffer.ql</code></p>
-
-<script src="https://gist.github.com/1886996.js?file=gistfile1.sql"></script>
-
-
-<h3>Step 4: Use the API</h3>
-
-<pre><code>POST /offers?siteId=0&amp;itemId=your-item-id&amp;offer=your-offer&amp;action=your-action&amp;quantity=your-quantity
-Host: api.ebay.com/ws/api.dll
-Authorization: your auth token
-</code></pre>
-
-<p>This request returns JSON.</p>
-
-<h3>Step 5: Enjoy</h3>
-
-<p>No XML, no schemas, no SDKs. As an added benefit, you can combine this API with other APIs as you
-like using ql.io&#8217;s DSL.</p>
-
-<p>Why does this matter? If you have a legacy API that you can not afford to rewrite to use HTTP
-sanely, ql.io can help you hide it behind a saner interface.</p>
-
-<p>Thanks to <a href="https://github.com/jmrodriguez">Juan Rodriguez</a> for showing me this example.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/02/13/v0.4/">ql.io 0.4.0</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-02-13T00:00:00-08:00" pubdate data-updated="true">Feb 13<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Verson 0.4 of ql.io is out to npm today. Here is a quick summary of changes.</p>
-
-<ul>
-<li>Use native cluster module to start the app</li>
-<li>Upgrade all dependencies to the latest</li>
-<li>Limit response size to 10000000 bytes from upstream sources. You can change this with
-<code>maxResponseLength</code> in the config.</li>
-<li>Limit outgoing requests per statement to 50. You can change this with <code>maxRequests</code> in the config.</li>
-<li>Chain events for logging done with log-emitter.</li>
-<li>Add a new JSON based interface to browse tables and routes. Try <code>/routes</code> to start browsing.</li>
-<li>Integrate <a href="https://github.com/s3u/har-view">har-view</a></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/02/12/nodepdx-slides/">Slides From NodePDX</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-02-12T00:00:00-08:00" pubdate data-updated="true">Feb 12<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Here are the slides from my talk/demo on ql.io at <a href="http://nodepdx.github.com/">NodePDX</a>.</p>
-
-<div style="width:425px" id="__ss_11530669"> <strong style="display:block;margin:12px 0 4px"><a href="http://www.slideshare.net/sallamar/qlio-at-nodepdx" title="ql.io at NodePDX" target="_blank">ql.io at NodePDX</a></strong> <iframe src="http://www.slideshare.net/slideshow/embed_code/11530669" width="425" height="355" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe> <div style="padding:5px 0 12px"> View more <a href="http://www.slideshare.net/thecroaker/death-by-powerpoint" target="_blank">PowerPoint</a> from <a href="http://www.slideshare.net/sallamar" target="_blank">Subbu Allamaraju</a> </div> </div>
-
-
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/01/24/node-summit-slides/">Slides From Node Summit</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-01-24T00:00:00-08:00" pubdate data-updated="true">Jan 24<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Here are the slides from the workshop on ql.io at the Node Summit titled
-&#8220;ql.io: Consuming HTTP at Scale&#8221;.</p>
-
-<div style="width:425px" id="__ss_11244206"> <strong style="display:block;margin:12px 0 4px"><a href="http://www.slideshare.net/sallamar/qlio-consuming-http-at-scale" title="ql.io: Consuming HTTP at Scale " target="_blank">ql.io: Consuming HTTP at Scale </a></strong> <iframe src="http://www.slideshare.net/slideshow/embed_code/11244206" width="425" height="355" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe> <div style="padding:5px 0 12px"> View more <a href="http://www.slideshare.net/thecroaker/death-by-powerpoint" target="_blank">PowerPoint</a> from <a href="http://www.slideshare.net/sallamar" target="_blank">Subbu Allamaraju</a> </div> </div>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/01/17/v0.4-beta/">ql.io 0.4.0-beta</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-01-17T00:00:00-08:00" pubdate data-updated="true">Jan 17<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>This is a beta release of ql.io on node.js 0.6.x.</p>
-
-<ul>
-<li>Use native cluster module to start the app</li>
-<li>Upgrade all dependencies to the latest</li>
-<li>Limit response size to 10000000 bytes from upstream sources. You can change this with
-<code>maxResponseLength</code> in the config.</li>
-<li>Limit outgoing requests per statement to 50. You can change this with <code>maxRequests</code> in the config.</li>
-<li>Chain events for logging done with log-emitter.</li>
-<li>Add a new JSON based interface to browse tables and routes. Try <code>/routes</code> to start browsing.</li>
-</ul>
-
-
-<p>If you are interested in running ql.io on node.js 0.4.x, use the
-<a href="https://github.com/ql-io/ql.io/tree/0.3">0.3 branch</a>.</p>
-
-<p>To create an app using ql.io 0.4 modules, follow the usual steps:</p>
-
-<pre><code> mkdir myapp
- cd myapp
- curl https://raw.github.com/ql-io/ql.io/master/modules/template/init.sh | bash
- bin/start.sh
-</code></pre>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/01/09/benchmarks/">ql.io Baseline Benchmarks</a></h1>
+      <h1 class="entry-title">ql.io Baseline Benchmarks</h1>
     
     
       <p class="meta">
@@ -444,7 +91,7 @@ sanely, ql.io can help you hide it behind a saner interface.</p>
   </header>
 
 
-  <div class="entry-content"><p>One of the key visible benefits of <a href="http://ql.io">ql.io</a> is that it eliminates the code noise that
+<div class="entry-content"><p>One of the key visible benefits of <a href="http://ql.io">ql.io</a> is that it eliminates the code noise that
 is common in writing HTTP client apps. As a DSL for writing HTTP client code, it focuses on
 automating the task of making multiple HTTP requests and processing responses in the best order
 possible taking care of paralleization, orchestration, projections and normalizations behind the
@@ -699,101 +346,16 @@ the number based on the characteristics of the app may yield better results.</li
 github</a>. Watchout for a repeat of these tests on node.js
 0.6.x.</p>
 </div>
-  
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/17/no.de/">ql.io on Joyent&#8217;s no.de</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
   
 
+<span class="byline author vcard">Posted by <span class="fn">subbu</span></span>
 
-<time datetime="2011-12-17T00:00:00-08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>If you&#8217;re interested in setting a ql.io app instance on a Joyent&#8217;s <a href="https://no.de/">no.de</a>, here is
-how.</p>
-
-<ul>
-<li>Clone the template app</li>
-</ul>
-
-
-<pre class="brush: bash toolbar: false;">
-git clone git@github.com:ql-io/ql-io.no.de.git
-</pre>
-
-
-<p>This template includes a server.js, some sample ql.io scripts.</p>
-
-<ul>
-<li><p>Create a SmartMachine instance on no.de.</p></li>
-<li><p>Push the app to no.de</p></li>
-</ul>
-
-
-<pre class="brush: bash toolbar: false;">
-# Assuming your smart machine name is "foo"
-cd ql-io.no.de
-git remote add foo.no.de foo.no.de:repo
-git push foo.no.de master
-</pre>
-
-
-<p>This will push the app to your SmartMachine, and bring it up.</p>
-
-<ul>
-<li>Try a sample route.</li>
-</ul>
-
-
-<pre class="brush: bash toolbar: false;">
-curl http://foo.no.de/myapi
-</pre>
-
-
-<p>Use <code>http://foo.no.de/console</code> to view the console.</p>
-
-<p>See <a href="http://ql.no.de/myapi">ql.no.de/myapi</a> to see this example in action.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/16/milestone/">Milestone 6</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
 
@@ -805,121 +367,34 @@ curl http://foo.no.de/myapi
   
 
 
-<time datetime="2011-12-16T00:00:00-08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ul>
-<li><p>Clients can occasionally get socket hangup errors when origin servers close connections without
-sending a <code>Connection: close</code> header. See
-<a href="https://github.com/joyent/node/issues/1135">https://github.com/joyent/node/issues/1135</a> for some
-background. To avoid such errors, http.request.js now automatically retries the request once
-provided the statement that caused the HTTP request is a <code>select</code>.</p></li>
-<li><p>The engine can now consume CSV response in addition to XML and JSON.</p></li>
-<li><p>Fixed request body processing for routes (see <a href="https://github.com/ql-io/ql.io/pull/161">issue 161</a>).</p></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
+<time datetime="2012-01-09T00:00:00-08:00" pubdate data-updated="true">Jan 9<span>th</span>, 2012</time>
       
-  <header>
+
+
+    </p>
     
-      <h1 class="entry-title"><a href="/blog/2011/12/08/milestone/">Milestone 5</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
+      <div class="sharing">
   
-
-
-<time datetime="2011-12-08T00:00:00-08:00" pubdate data-updated="true">Dec 8<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ul>
-<li><p><a href="https://github.com/ql-io/ql.io/issues/121">OAuth example</a> - OAuth2 is trivial as ql.io proxies
-headers from clients to servers. OAuth1 requires glue code to compute the Authorization header.
-See <a href="http://ql.io/docs/oauth">http://ql.io/docs/oauth</a> for an example.</p></li>
-<li><p>Use npm installed modules for ql.io-site (<a href="https://github.com/ql-io/ql.io/issues/116">see issue 116</a>).</p></li>
-<li><p>Handle empty response bodies gracefully (<a href="https://github.com/ql-io/ql.io/issues/98">see issue 98</a>).</p></li>
-<li><p>Recover from partial failures in case of scatter-gather calls
-(<a href="https://github.com/ql-io/ql.io/issues/90">see issue 90</a>) - some statements can result in multiple
-HTTP requests. When this happens, the engine used to fail the entire statement if any of those
-requests fail. The engine now looks for success responses and aggregates them.</p></li>
-<li><p>Update CodeMirror to support line-wrapping (<a href="https://github.com/ql-io/ql.io/issues/11">See issue
-11</a>) - no need to split lines manually anymore.</p></li>
-</ul>
-
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ql-io.github.com/blog/2012/01/09/benchmarks/" data-via="" data-counturl="http://ql-io.github.com/blog/2012/01/09/benchmarks/" >Tweet</a>
+  
+  
+  
 </div>
-  
-  
 
-
-    </article>
-  
-  
-    <article>
+    
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/11/29/launch/">ql.io Launch</a></h1>
-    
-    
-      <p class="meta">
-        
+        <a class="basic-alignment left" href="/blog/2011/12/17/no.de/" title="Previous Post: ql.io on Joyent's no.de">&laquo; ql.io on Joyent's no.de</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/01/17/v0.4-beta/" title="Next Post: ql.io 0.4.0-beta">ql.io 0.4.0-beta &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
 
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-11-29T00:00:00-08:00" pubdate data-updated="true">Nov 29<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>See <a href="http://www.ebaytechblog.com/2011/11/30/announcing-ql-io/">Announcing ql.io</a>.</p>
 </div>
-  
-  
 
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section>
@@ -956,6 +431,7 @@ requests fail. The engine now looks for success responses and aggregates them.</
 
   
 </aside>
+
 
     </div>
   </div>
