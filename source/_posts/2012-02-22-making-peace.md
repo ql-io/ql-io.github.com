@@ -2,6 +2,7 @@
 title: Making Peace with HTTP APIs
 layout: post
 author: subbu
+comments: true
 ---
 
 Once in a while you come across an HTTP API that uses HTTP in complicated and incorrect ways. There
