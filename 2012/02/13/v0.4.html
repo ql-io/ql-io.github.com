@@ -5,13 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Milestone 6 - ql.io blog</title>
+  <title>ql.io 0.4.0 - ql.io blog</title>
   <meta name="author" content="ql.io">
 
   
-  <meta name="description" content="Clients can occasionally get socket hangup errors when origin servers close connections without
-sending a Connection: close header. See
-https:// &hellip;">
+  <meta name="description" content="Verson 0.4 of ql.io is out to npm today. Here is a quick summary of changes. Use native cluster module to start the app
+Upgrade all dependencies to &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +19,7 @@ https:// &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://ql-io.github.com/2011/12/16/milestone">
+  <link rel="canonical" href="http://ql-io.github.com/2012/02/13/v0.4.html">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -82,7 +81,7 @@ https:// &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Milestone 6</h1>
+      <h1 class="entry-title">ql.io 0.4.0</h1>
     
     
       <p class="meta">
@@ -98,7 +97,7 @@ https:// &hellip;">
   
 
 
-<time datetime="2011-12-16T00:00:00-08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2011</time>
+<time datetime="2012-02-13T00:00:00-08:00" pubdate data-updated="true">Feb 13<span>th</span>, 2012</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -107,14 +106,17 @@ https:// &hellip;">
   </header>
 
 
-<div class="entry-content"><ul>
-<li><p>Clients can occasionally get socket hangup errors when origin servers close connections without
-sending a <code>Connection: close</code> header. See
-<a href="https://github.com/joyent/node/issues/1135">https://github.com/joyent/node/issues/1135</a> for some
-background. To avoid such errors, http.request.js now automatically retries the request once
-provided the statement that caused the HTTP request is a <code>select</code>.</p></li>
-<li><p>The engine can now consume CSV response in addition to XML and JSON.</p></li>
-<li><p>Fixed request body processing for routes (see <a href="https://github.com/ql-io/ql.io/pull/161">issue 161</a>).</p></li>
+<div class="entry-content"><p>Verson 0.4 of ql.io is out to npm today. Here is a quick summary of changes.</p>
+
+<ul>
+<li>Use native cluster module to start the app</li>
+<li>Upgrade all dependencies to the latest</li>
+<li>Limit response size to 10000000 bytes from upstream sources. You can change this with
+<code>maxResponseLength</code> in the config.</li>
+<li>Limit outgoing requests per statement to 50. You can change this with <code>maxRequests</code> in the config.</li>
+<li>Chain events for logging done with log-emitter.</li>
+<li>Add a new JSON based interface to browse tables and routes. Try <code>/routes</code> to start browsing.</li>
+<li>Integrate <a href="https://github.com/s3u/har-view">har-view</a></li>
 </ul>
 
 </div>
@@ -139,7 +141,7 @@ provided the statement that caused the HTTP request is a <code>select</code>.</p
   
 
 
-<time datetime="2011-12-16T00:00:00-08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2011</time>
+<time datetime="2012-02-13T00:00:00-08:00" pubdate data-updated="true">Feb 13<span>th</span>, 2012</time>
       
 
 
@@ -147,7 +149,7 @@ provided the statement that caused the HTTP request is a <code>select</code>.</p
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ql-io.github.com/2011/12/16/milestone/" data-via="" data-counturl="http://ql-io.github.com/2011/12/16/milestone/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ql-io.github.com/2012/02/13/v0.4.html" data-via="" data-counturl="http://ql-io.github.com/2012/02/13/v0.4.html" >Tweet</a>
   
   
   
@@ -156,10 +158,10 @@ provided the statement that caused the HTTP request is a <code>select</code>.</p
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/2011/12/08/milestone/" title="Previous Post: Milestone 5">&laquo; Milestone 5</a>
+        <a class="basic-alignment left" href="/2012/02/12/nodepdx-slides.html" title="Previous Post: Slides from NodePDX">&laquo; Slides from NodePDX</a>
       
       
-        <a class="basic-alignment right" href="/2011/12/17/no.de/" title="Next Post: ql.io on Joyent's no.de">ql.io on Joyent's no.de &raquo;</a>
+        <a class="basic-alignment right" href="/2012/02/22/making-peace.html" title="Next Post: Making Peace with HTTP APIs">Making Peace with HTTP APIs &raquo;</a>
       
     </p>
   </footer>
@@ -174,43 +176,43 @@ provided the statement that caused the HTTP request is a <code>select</code>.</p
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/2012/02/22/making-peace/">Making Peace with HTTP APIs</a>
+        <a href="/2012/02/22/making-peace.html">Making Peace with HTTP APIs</a>
       </li>
     
       <li class="post">
-        <a href="/2012/02/13/v0.4/">ql.io 0.4.0</a>
+        <a href="/2012/02/13/v0.4.html">ql.io 0.4.0</a>
       </li>
     
       <li class="post">
-        <a href="/2012/02/12/nodepdx-slides/">Slides from NodePDX</a>
+        <a href="/2012/02/12/nodepdx-slides.html">Slides from NodePDX</a>
       </li>
     
       <li class="post">
-        <a href="/2012/01/24/node-summit-slides/">Slides from Node Summit</a>
+        <a href="/2012/01/24/node-summit-slides.html">Slides from Node Summit</a>
       </li>
     
       <li class="post">
-        <a href="/2012/01/17/v0.4-beta/">ql.io 0.4.0-beta</a>
+        <a href="/2012/01/17/v0.4-beta.html">ql.io 0.4.0-beta</a>
       </li>
     
       <li class="post">
-        <a href="/2012/01/09/benchmarks/">ql.io Baseline Benchmarks</a>
+        <a href="/2012/01/09/benchmarks.html">ql.io Baseline Benchmarks</a>
       </li>
     
       <li class="post">
-        <a href="/2011/12/17/no.de/">ql.io on Joyent's no.de</a>
+        <a href="/2011/12/17/no.de.html">ql.io on Joyent's no.de</a>
       </li>
     
       <li class="post">
-        <a href="/2011/12/16/milestone/">Milestone 6</a>
+        <a href="/2011/12/16/milestone.html">Milestone 6</a>
       </li>
     
       <li class="post">
-        <a href="/2011/12/08/milestone/">Milestone 5</a>
+        <a href="/2011/12/08/milestone.html">Milestone 5</a>
       </li>
     
       <li class="post">
-        <a href="/2011/11/29/launch/">ql.io Launch</a>
+        <a href="/2011/11/29/launch.html">ql.io Launch</a>
       </li>
     
   </ul>

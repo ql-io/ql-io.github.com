@@ -5,12 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Milestone 5 - ql.io blog</title>
+  <title>ql.io 0.4.0-beta - ql.io blog</title>
   <meta name="author" content="ql.io">
 
   
-  <meta name="description" content="OAuth example - OAuth2 is trivial as ql.io proxies
-headers from clients to servers. OAuth1 requires glue code to compute the Authorization header. &hellip;">
+  <meta name="description" content="This is a beta release of ql.io on node.js 0.6.x. Use native cluster module to start the app
+Upgrade all dependencies to the latest
+Limit response &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +20,7 @@ headers from clients to servers. OAuth1 requires glue code to compute the Author
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://ql-io.github.com/2011/12/08/milestone">
+  <link rel="canonical" href="http://ql-io.github.com/2012/01/17/v0.4-beta.html">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -81,7 +82,7 @@ headers from clients to servers. OAuth1 requires glue code to compute the Author
   
   <header>
     
-      <h1 class="entry-title">Milestone 5</h1>
+      <h1 class="entry-title">ql.io 0.4.0-beta</h1>
     
     
       <p class="meta">
@@ -97,7 +98,7 @@ headers from clients to servers. OAuth1 requires glue code to compute the Author
   
 
 
-<time datetime="2011-12-08T00:00:00-08:00" pubdate data-updated="true">Dec 8<span>th</span>, 2011</time>
+<time datetime="2012-01-17T00:00:00-08:00" pubdate data-updated="true">Jan 17<span>th</span>, 2012</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -106,20 +107,29 @@ headers from clients to servers. OAuth1 requires glue code to compute the Author
   </header>
 
 
-<div class="entry-content"><ul>
-<li><p><a href="https://github.com/ql-io/ql.io/issues/121">OAuth example</a> - OAuth2 is trivial as ql.io proxies
-headers from clients to servers. OAuth1 requires glue code to compute the Authorization header.
-See <a href="http://ql.io/docs/oauth">http://ql.io/docs/oauth</a> for an example.</p></li>
-<li><p>Use npm installed modules for ql.io-site (<a href="https://github.com/ql-io/ql.io/issues/116">see issue 116</a>).</p></li>
-<li><p>Handle empty response bodies gracefully (<a href="https://github.com/ql-io/ql.io/issues/98">see issue 98</a>).</p></li>
-<li><p>Recover from partial failures in case of scatter-gather calls
-(<a href="https://github.com/ql-io/ql.io/issues/90">see issue 90</a>) - some statements can result in multiple
-HTTP requests. When this happens, the engine used to fail the entire statement if any of those
-requests fail. The engine now looks for success responses and aggregates them.</p></li>
-<li><p>Update CodeMirror to support line-wrapping (<a href="https://github.com/ql-io/ql.io/issues/11">See issue
-11</a>) - no need to split lines manually anymore.</p></li>
+<div class="entry-content"><p>This is a beta release of ql.io on node.js 0.6.x.</p>
+
+<ul>
+<li>Use native cluster module to start the app</li>
+<li>Upgrade all dependencies to the latest</li>
+<li>Limit response size to 10000000 bytes from upstream sources. You can change this with
+<code>maxResponseLength</code> in the config.</li>
+<li>Limit outgoing requests per statement to 50. You can change this with <code>maxRequests</code> in the config.</li>
+<li>Chain events for logging done with log-emitter.</li>
+<li>Add a new JSON based interface to browse tables and routes. Try <code>/routes</code> to start browsing.</li>
 </ul>
 
+
+<p>If you are interested in running ql.io on node.js 0.4.x, use the
+<a href="https://github.com/ql-io/ql.io/tree/0.3">0.3 branch</a>.</p>
+
+<p>To create an app using ql.io 0.4 modules, follow the usual steps:</p>
+
+<pre><code> mkdir myapp
+ cd myapp
+ curl https://raw.github.com/ql-io/ql.io/master/modules/template/init.sh | bash
+ bin/start.sh
+</code></pre>
 </div>
 
 
@@ -142,7 +152,7 @@ requests fail. The engine now looks for success responses and aggregates them.</
   
 
 
-<time datetime="2011-12-08T00:00:00-08:00" pubdate data-updated="true">Dec 8<span>th</span>, 2011</time>
+<time datetime="2012-01-17T00:00:00-08:00" pubdate data-updated="true">Jan 17<span>th</span>, 2012</time>
       
 
 
@@ -150,7 +160,7 @@ requests fail. The engine now looks for success responses and aggregates them.</
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ql-io.github.com/2011/12/08/milestone/" data-via="" data-counturl="http://ql-io.github.com/2011/12/08/milestone/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ql-io.github.com/2012/01/17/v0.4-beta.html" data-via="" data-counturl="http://ql-io.github.com/2012/01/17/v0.4-beta.html" >Tweet</a>
   
   
   
@@ -159,10 +169,10 @@ requests fail. The engine now looks for success responses and aggregates them.</
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/2011/11/29/launch/" title="Previous Post: ql.io Launch">&laquo; ql.io Launch</a>
+        <a class="basic-alignment left" href="/2012/01/09/benchmarks.html" title="Previous Post: ql.io Baseline Benchmarks">&laquo; ql.io Baseline Benchmarks</a>
       
       
-        <a class="basic-alignment right" href="/2011/12/16/milestone/" title="Next Post: Milestone 6">Milestone 6 &raquo;</a>
+        <a class="basic-alignment right" href="/2012/01/24/node-summit-slides.html" title="Next Post: Slides from Node Summit">Slides from Node Summit &raquo;</a>
       
     </p>
   </footer>
@@ -177,43 +187,43 @@ requests fail. The engine now looks for success responses and aggregates them.</
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/2012/02/22/making-peace/">Making Peace with HTTP APIs</a>
+        <a href="/2012/02/22/making-peace.html">Making Peace with HTTP APIs</a>
       </li>
     
       <li class="post">
-        <a href="/2012/02/13/v0.4/">ql.io 0.4.0</a>
+        <a href="/2012/02/13/v0.4.html">ql.io 0.4.0</a>
       </li>
     
       <li class="post">
-        <a href="/2012/02/12/nodepdx-slides/">Slides from NodePDX</a>
+        <a href="/2012/02/12/nodepdx-slides.html">Slides from NodePDX</a>
       </li>
     
       <li class="post">
-        <a href="/2012/01/24/node-summit-slides/">Slides from Node Summit</a>
+        <a href="/2012/01/24/node-summit-slides.html">Slides from Node Summit</a>
       </li>
     
       <li class="post">
-        <a href="/2012/01/17/v0.4-beta/">ql.io 0.4.0-beta</a>
+        <a href="/2012/01/17/v0.4-beta.html">ql.io 0.4.0-beta</a>
       </li>
     
       <li class="post">
-        <a href="/2012/01/09/benchmarks/">ql.io Baseline Benchmarks</a>
+        <a href="/2012/01/09/benchmarks.html">ql.io Baseline Benchmarks</a>
       </li>
     
       <li class="post">
-        <a href="/2011/12/17/no.de/">ql.io on Joyent's no.de</a>
+        <a href="/2011/12/17/no.de.html">ql.io on Joyent's no.de</a>
       </li>
     
       <li class="post">
-        <a href="/2011/12/16/milestone/">Milestone 6</a>
+        <a href="/2011/12/16/milestone.html">Milestone 6</a>
       </li>
     
       <li class="post">
-        <a href="/2011/12/08/milestone/">Milestone 5</a>
+        <a href="/2011/12/08/milestone.html">Milestone 5</a>
       </li>
     
       <li class="post">
-        <a href="/2011/11/29/launch/">ql.io Launch</a>
+        <a href="/2011/11/29/launch.html">ql.io Launch</a>
       </li>
     
   </ul>
