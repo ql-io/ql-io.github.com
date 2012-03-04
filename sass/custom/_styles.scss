@@ -1,9 +1,18 @@
 // This File is imported last, and will override other styles in the cascade
 // Add styles here to make changes without digging in too much
 
-p.main-navigation {
-  padding-top: 1em;
-  font-size: small;
+.top-links {
+  padding-top: 0;
+  background-color: red;
+  padding: 8px;
+  color: white;
+  font-weight: bold;
+  text-align: right;
+}
+
+.top-links a {
+  color: white;
+  text-decoration: none;
 }
 
 html, body, h1, h2 {
