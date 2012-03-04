@@ -19,9 +19,8 @@ complexity of such APIs.
 
 <!-- more -->
 
-To illustrate, let me take eBay's [PlaceOffer
-API](http://developer.ebay.com/DevZone/XML/docs/Reference/eBay/PlaceOffer.html) that lets an eBay
-buyer place an offer for an item listed on eBay. This example may be more complex than other similar
+To illustrate, let me take eBay's [PlaceOffer API](http://developer.ebay.com/DevZone/XML/docs/Reference/eBay/PlaceOffer.html)
+that lets an eBay buyer place an offer for an item listed on eBay. This example may be more complex than other similar
 APIs that you have encoutered, but it helps me drive the point.
 
 This API requires you to send a POST request with some custom headers and an XML document in the
