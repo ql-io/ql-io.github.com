@@ -4,7 +4,7 @@
   <title><![CDATA[ql.io blog]]></title>
   <link href="http://ql-io.github.com/atom.xml" rel="self"/>
   <link href="http://ql-io.github.com/"/>
-  <updated>2012-03-13T06:34:04-07:00</updated>
+  <updated>2012-03-13T07:16:08-07:00</updated>
   <id>http://ql-io.github.com/</id>
   <author>
     <name><![CDATA[ql.io]]></name>
@@ -41,7 +41,7 @@
 
 <p>Here is an example.</p>
 
-<p><a href="http://ql.io/api"><img src="http://ql-io.github.com/images/2012-03-12-byoa-1.png" alt="API browsing" /></a></p>
+<p><a href="http://ql.io/api"><img src="http://ql-io.github.com/images/2012-03-12-en-route-1.png" alt="API browsing" /></a></p>
 
 <p>Go to <a href="http://ql.io/apis">http://ql.io/apis</a> to try it out. Though this capability is automatic, it needs a couple of actions as you build tables and routes.</p>
 
