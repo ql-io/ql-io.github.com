@@ -4,7 +4,7 @@
   <title><![CDATA[ql.io blog]]></title>
   <link href="http://ql-io.github.com/atom.xml" rel="self"/>
   <link href="http://ql-io.github.com/"/>
-  <updated>2012-03-12T18:18:59-07:00</updated>
+  <updated>2012-03-12T18:19:19-07:00</updated>
   <id>http://ql-io.github.com/</id>
   <author>
     <name><![CDATA[ql.io]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Build Your]]></title>
+    <title type="html"><![CDATA[Build Your Own APIs]]></title>
     <link href="http://ql-io.github.com/2012/03/12/build-your-own-apis.html"/>
     <updated>2012-03-12T00:00:00-07:00</updated>
     <id>http://ql-io.github.com/2012/03/12/build-your-own-apis</id>
