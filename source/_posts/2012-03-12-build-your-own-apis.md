@@ -1,4 +1,3 @@
-# Build Your Own APIs 
 
 A route in ql.io is a new consumer-optimized HTTP interface. Routes superimpose a simple and familiar HTTP interface on ql.io scripts without needing to specify an elaborate script in the request. In other words, routes make ql.io a platform to "build your own APIs". 
   
