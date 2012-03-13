@@ -12,6 +12,9 @@
          | <a href="{% if index %}{{ root_url }}{{ post.url }}{% endif %}#disqus_thread">Comments</a>
         {% endif %}
       </p>
+      <p>
+        {% include post/author.html %}
+      </p>
     {% endunless %}
   </header>
 {% endunless %}
