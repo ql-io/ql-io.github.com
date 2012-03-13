@@ -2,6 +2,9 @@
 
 <p>Having built this capability, in this post I want to highlight some potential ways to take advantage of routes.</p>
 
+<!-- more -->
+
+
 <h2>Discovery</h2>
 
 <p>Let&#8217;s imagine you built some new APIs using ql.io. How can your users find more about those APIs? Here is how.</p>
@@ -51,20 +54,20 @@ return {
 } via route '/search?q={keyword}' using method get;
 </code></pre>
 
-<p>With this route, you can use <code>http://{host}:{port}/search?q={your keyword here}</code> to run the script. Try this route at [http://ql.io/search?q=</p>
+<p>With this route, you can use <code>http://{host}:{port}/search?q={your keyword here}</code> to run the script. Try this route at <a href="http://ql.io/search?q=ql.io">http://ql.io/search?q=ql.io</a>.</p>
 
 <h2>Similar but Different</h2>
 
 <p>There are other ways to parameterize routes. Let&#8217;s say, you would like to provide the following resources to client apps.</p>
 
 <ol>
-<li><code>http://{host}:{port}/item/location?itemid={itemid}</code> with method <code>GET</code>: Retrieve geo-location for a given an item id.</li>
+<li><code>http://{host}:{port}/item/location?itemid={itemid}</code> with method <code>GET</code>: Retrieve geo-location for a given item id.</li>
 <li><code>http://{host}:{port}/item/location?keyword={keyword}</code> with method <code>GET</code>: Given a keyword, find matching items, and then find and return their geo-locations.</li>
 <li><code>http://{host}:{port}/item/location?itemid={itemid}&amp;keyword={keyword}</code> with method <code>GET</code>: Given a keyword and item ID, find geolocatons of all items matching the keyword, and also for the item ID. Such a response may be useful when you want to show locations of a given items, but also other items that match the keyword.</li>
 </ol>
 
 
-<p>Notice all the routes given above have the same HTTP method <code>GET</code> and the same path <code>/item/location</code> but differ in query parameters. But as the aggregation logic may be different for each of these scripts, you can define three different scripts for the same path.</p>
+<p>Notice all the routes above have the same HTTP method <code>GET</code> and the same path <code>/item/location</code> but differ in query parameters. But as the aggregation logic may be different for each of these scripts, you can define three different scripts for the same path.</p>
 
 <p>Here is a route for <code>/item/location?itemid={itemid}</code></p>
 
