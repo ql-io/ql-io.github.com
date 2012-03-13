@@ -1,0 +1,413 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Build Your Own APIs - ql.io blog</title>
+  <meta name="author" content="ql.io">
+
+  
+  <meta name="description" content="A route in ql.io is a new consumer-optimized HTTP interface. Routes superimpose a simple and familiar HTTP interface on ql.io scripts without needing &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ql-io.github.com/2012/03/12/build-your-own-apis.html">
+  <link href="/favicon.ico" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="ql.io blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-21835406-5']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <p class="top-links">
+    <span style="float:left"><a href="/">ql.io blog</a></span>
+    <a href="http://ql.io/">project</a> |
+    <a href="https://github.com/ql-io/ql.io/">github</a> |
+    <a href="/blog/archives">archives</a> |
+    <a href="/atom.xml">subscribe</a>
+</p>
+
+
+
+  <nav role="navigation"><!--<ul class="subscription" data-subscription="rss">-->
+  <!--<li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>-->
+  <!---->
+<!--</ul>-->
+  <!---->
+<!--<form action="http://google.com/search" method="get">-->
+  <!--<fieldset role="search">-->
+    <!--<input type="hidden" name="q" value="site:ql-io.github.com" />-->
+    <!--<input class="search" type="text" name="q" results="0" placeholder="Search"/>-->
+  <!--</fieldset>-->
+<!--</form>-->
+  <!---->
+<!--<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="https://github.com/ql-io/ql.io/">Github</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+-->
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Build Your Own APIs</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-12T00:00:00-07:00" pubdate data-updated="true">Mar 12<span>th</span>, 2012</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+      <p>
+        
+  
+
+
+<span class="byline author vcard">Posted by <a href="http://github.com/shimonchayim">Cylus Penkar</a></span>
+
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>A route in ql.io is a new consumer-optimized HTTP interface. Routes superimpose a simple and familiar HTTP interface on ql.io scripts without needing to specify an elaborate script in the request. In other words, routes make ql.io a platform to &#8220;build your own APIs&#8221;.</p>
+
+<p>Having built this capability, in this post I want to highlight some potential ways to take advantage of routes.</p>
+
+<!-- more -->
+
+
+<h2>Discovery</h2>
+
+<p>Let&#8217;s imagine you built some new APIs using ql.io. How can your users find more about those APIs? Here is how.</p>
+
+<p>Every ql.io now includes a special URI <code>http://{host}:{port}/api</code> that lets you browse through the following:</p>
+
+<ul>
+<li>List of routes</li>
+<li>For each route, a URI template (or a URI), and HTTP method supported.</li>
+<li>For each route, the tables used</li>
+<li>For each table, the original HTTP resource that it maps to.</li>
+</ul>
+
+
+<p>Here is an example.</p>
+
+<p><img src="/images/2012-03-12-byoa-1.png" alt="API browsing" /></p>
+
+<p>Go to <a href="http://ql.io/apis">http://ql.io/apis</a> to try it out. Though this capability is automatic, it needs a couple of actions as you build tables and routes.</p>
+
+<h2>Parametrizing</h2>
+
+<p>Let us consider the following script.</p>
+
+<pre><code>keyword = "ql.io";
+web = select web:Title, web:Url, web:Description from bing.search where q = "{keyword}";
+tweets = select id as id, from_user_name as user_name, text as text
+    from twitter.search where q = "{keyword}";
+
+return {
+  "keyword": "{keyword}",
+  "web": "{web}",
+  "tweets": "{tweets}"
+}
+</code></pre>
+
+<p>Since <code>keywords</code> is hardcoded in this script, it is only capable of finding &#8220;ql.io&#8221; from twitter and bing. You can parameterize this script by defining it as a route.</p>
+
+<pre><code>web = select web:Title, web:Url, web:Description from bing.search where q = "{keyword}";
+tweets = select id as id, from_user_name as user_name, text as text
+    from twitter.search where q = "{keyword}";
+
+return {
+  "keyword": "{keyword}",
+  "web": "{web}",
+  "tweets": "{tweets}"
+} via route '/search?q={keyword}' using method get;
+</code></pre>
+
+<p>With this route, you can use <code>http://{host}:{port}/search?q={your keyword here}</code> to run the script. Try this route at <a href="http://ql.io/search?q=ql.io">http://ql.io/search?q=ql.io</a>.</p>
+
+<h2>Similar but Different</h2>
+
+<p>There are other ways to parameterize routes. Let&#8217;s say, you would like to provide the following resources to client apps.</p>
+
+<ol>
+<li><code>http://{host}:{port}/item/location?itemid={itemid}</code> with method <code>GET</code>: Retrieve geo-location for a given item id.</li>
+<li><code>http://{host}:{port}/item/location?keyword={keyword}</code> with method <code>GET</code>: Given a keyword, find matching items, and then find and return their geo-locations.</li>
+<li><code>http://{host}:{port}/item/location?itemid={itemid}&amp;keyword={keyword}</code> with method <code>GET</code>: Given a keyword and item ID, find geolocatons of all items matching the keyword, and also for the item ID. Such a response may be useful when you want to show locations of a given items, but also other items that match the keyword.</li>
+</ol>
+
+
+<p>Notice all the routes above have the same HTTP method <code>GET</code> and the same path <code>/item/location</code> but differ in query parameters. But as the aggregation logic may be different for each of these scripts, you can define three different scripts for the same path.</p>
+
+<p>Here is a route for <code>/item/location?itemid={itemid}</code></p>
+
+<pre><code>-- Matches request  /item/location?itemid=140716431558 
+--
+return select e.ItemID as id, e.Title as title, e.ViewItemURLForNaturalSearch as url, 
+              g.geometry.location as latlng
+              from details  as e, google.geocode as g
+               where e.itemId = "{itemid}"
+                     and g.address = e.Location
+       via route '/item/location?itemid={itemid}' using method get;
+</code></pre>
+
+<p>Here is the route for <code>/item/location?keyword={keyword}</code>.</p>
+
+<pre><code>-- Matches request  /item/location?keyword=ipad 
+--
+return select e.ItemID as id, e.Title as title, e.ViewItemURLForNaturalSearch as url, 
+             g.geometry.location as latlng
+             from details  as e, google.geocode as g
+             where e.itemId in (select itemId from finditems where keywords = "{keyword}")
+                   and g.address = e.Location
+       via route '/item/location?keyword={keyword}' using method get;
+</code></pre>
+
+<p>Finally, here is the route for <code>/item/location?itemid={itemid}&amp;keyword={keyword}</code></p>
+
+<pre><code>-- Matches request  /item/location?keyword=ipad&amp;itemid=140716431558 
+--
+keywordResult =  select e.ItemID as id, e.Title as title, e.ViewItemURLForNaturalSearch as url, 
+                        g.geometry.location as latlng
+                        from details  as e, google.geocode as g
+                        where e.itemId in (select itemId from finditems where keywords = "{keyword}")
+                              and g.address = e.Location
+itemidResult =  select e.ItemID as id, e.Title as title, e.ViewItemURLForNaturalSearch as url, 
+                       g.geometry.location as latlng
+                       from details  as e, google.geocode as g
+                       where e.itemId = "{itemid}"
+                             and g.address = e.Location
+return {
+    "keywordResult": "{keywordResult}",
+    "itemidResult" : "{itemidResult}"
+} via route '/item/location?itemid={itemid}&amp;keyword={keyword}' using get;
+</code></pre>
+
+<p>Given a request URI, ql.io&#8217;s routing engine is capable of matching the request to one of these scripts.</p>
+
+<h2>Non-Idempotent and Unsafe</h2>
+
+<p>Route parameterization is not limited to HTTP <code>GET</code> alone. You can allow clients to supply bodies with <code>POST</code>, <code>PUT</code>, <code>PATCH</code> and <code>DELETE</code> requests.</p>
+
+<p>Consider the following table for bitly APIs.</p>
+
+<pre><code>create table bitly.shorten
+  on insert get from "http://api.bitly.com/v3/shorten?login={^login}&amp;apiKey={^apikey}&amp;longUrl={^longUrl}&amp;format={format}"
+            using defaults apikey = "{config.bitly.apikey}", login = "{config.bitly.login}", format = "json"
+            using patch 'bitly.js'
+            resultset 'data.url'
+  on select get from "http://api.bitly.com/v3/expand?login={^login}&amp;apiKey={^apikey}&amp;shortUrl={^shortUrl}&amp;format={format}"
+            using defaults apikey = "{config.bitly.apikey}", login = "{config.bitly.login}", format = "json"
+            using patch 'bitly.js'
+            resultset 'data.expand'
+</code></pre>
+
+<p>To shorten a URI, you may want to add a route that uses HTTP method <code>POST</code>.</p>
+
+<pre><code>return insert into bitly.shorten (longUrl) values ('{uri}')
+    via route '/bitly/shorten' using method post;
+</code></pre>
+
+<p>You can then use one of the following URIs to shorten a URI.</p>
+
+<pre><code>curl http://localhost:3000/bitly/shorten -X POST 
+  -H 'Content-Type: application/json' 
+  -d '{"uri": "http://www.ebay.com"}'
+
+curl http://localhost:3000/bitly/shorten -X POST 
+  -H 'Content-Type: application/xml' 
+  -d '&lt;uri&gt;http://www.ebay.com&lt;/uri&gt;'
+
+curl http://localhost:3000/bitly/shorten -X POST 
+  -H 'Content-Type: application/x-www-form-urlencoded' 
+  -d 'uri=http://www.ebay.com'
+</code></pre>
+
+<p>In each case, ql.io&#8217;s routing engine will coerce the body into an associative array, and substitutes the values for tokens in the routing script or tables used by the routing script.</p>
+
+<h2>Markdown</h2>
+
+<p>ql.io scripts can include <a href="http://daringfireball.net/projects/markdown/">markdown</a> based line comments that begin with <code>--</code>. ql.io treats comments preceding <code>return</code> statements in routing scripts, and comments preceding <code>create table</code> statements as documentation.</p>
+
+<pre><code>-- Use this resource to shorten a URI using bitly.
+
+return insert into bitly.shorten (longUrl) values ('{uri}')
+    via route '/bitly/shorten' using method post;
+</code></pre>
+
+<p>We&#8217;ve some work to do to support <a href="https://github.com/ql-io/ql.io/issues/340">multi-line comments</a>, but you get the idea!</p>
+</div>
+
+
+  <footer>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ql-io.github.com/2012/03/12/build-your-own-apis.html" data-via="" data-counturl="http://ql-io.github.com/2012/03/12/build-your-own-apis.html" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2012/02/22/making-peace.html" title="Previous Post: Making Peace with HTTP APIs">&laquo; Making Peace with HTTP APIs</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2012/03/12/build-your-own-apis.html">Build Your Own APIs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/02/22/making-peace.html">Making Peace with HTTP APIs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/02/13/v0.4.html">ql.io 0.4.0</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/02/12/nodepdx-slides.html">Slides from NodePDX</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/24/node-summit-slides.html">Slides from Node Summit</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/17/v0.4-beta.html">ql.io 0.4.0-beta</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/09/benchmarks.html">ql.io Baseline Benchmarks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/12/17/no.de.html">ql.io on Joyent's no.de</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/12/16/milestone.html">Milestone 6</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/12/08/milestone.html">Milestone 5</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - ql.io -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'qlioblog';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ql.io 0.4.0-beta - ql.io blog</title>
+  <meta name="author" content="ql.io">
+
+  
+  <meta name="description" content="This is a beta release of ql.io on node.js 0.6.x. Use native cluster module to start the app
+Upgrade all dependencies to the latest
+Limit response &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ql-io.github.com/2012/01/17/v0.4-beta.html">
+  <link href="/favicon.ico" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="ql.io blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-21835406-5']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <p class="top-links">
+    <span style="float:left"><a href="/">ql.io blog</a></span>
+    <a href="http://ql.io/">project</a> |
+    <a href="https://github.com/ql-io/ql.io/">github</a> |
+    <a href="/blog/archives">archives</a> |
+    <a href="/atom.xml">subscribe</a>
+</p>
+
+
+
+  <nav role="navigation"><!--<ul class="subscription" data-subscription="rss">-->
+  <!--<li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>-->
+  <!---->
+<!--</ul>-->
+  <!---->
+<!--<form action="http://google.com/search" method="get">-->
+  <!--<fieldset role="search">-->
+    <!--<input type="hidden" name="q" value="site:ql-io.github.com" />-->
+    <!--<input class="search" type="text" name="q" results="0" placeholder="Search"/>-->
+  <!--</fieldset>-->
+<!--</form>-->
+  <!---->
+<!--<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="https://github.com/ql-io/ql.io/">Github</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+-->
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">ql.io 0.4.0-beta</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-17T00:00:00-08:00" pubdate data-updated="true">Jan 17<span>th</span>, 2012</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+      <p>
+        
+  
+
+
+<span class="byline author vcard">Posted by <a href="http://github.com/s3u">Subbu Allamaraju</a></span>
+
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This is a beta release of ql.io on node.js 0.6.x.</p>
+
+<ul>
+<li>Use native cluster module to start the app</li>
+<li>Upgrade all dependencies to the latest</li>
+<li>Limit response size to 10000000 bytes from upstream sources. You can change this with
+<code>maxResponseLength</code> in the config.</li>
+<li>Limit outgoing requests per statement to 50. You can change this with <code>maxRequests</code> in the config.</li>
+<li>Chain events for logging done with log-emitter.</li>
+<li>Add a new JSON based interface to browse tables and routes. Try <code>/routes</code> to start browsing.</li>
+</ul>
+
+
+<p>If you are interested in running ql.io on node.js 0.4.x, use the
+<a href="https://github.com/ql-io/ql.io/tree/0.3">0.3 branch</a>.</p>
+
+<p>To create an app using ql.io 0.4 modules, follow the usual steps:</p>
+
+<pre><code> mkdir myapp
+ cd myapp
+ curl https://raw.github.com/ql-io/ql.io/master/modules/template/init.sh | bash
+ bin/start.sh
+</code></pre>
+</div>
+
+
+  <footer>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ql-io.github.com/2012/01/17/v0.4-beta.html" data-via="" data-counturl="http://ql-io.github.com/2012/01/17/v0.4-beta.html" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2012/01/09/benchmarks.html" title="Previous Post: ql.io Baseline Benchmarks">&laquo; ql.io Baseline Benchmarks</a>
+      
+      
+        <a class="basic-alignment right" href="/2012/01/24/node-summit-slides.html" title="Next Post: Slides from Node Summit">Slides from Node Summit &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2012/03/12/build-your-own-apis.html">Build Your Own APIs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/02/22/making-peace.html">Making Peace with HTTP APIs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/02/13/v0.4.html">ql.io 0.4.0</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/02/12/nodepdx-slides.html">Slides from NodePDX</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/24/node-summit-slides.html">Slides from Node Summit</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/17/v0.4-beta.html">ql.io 0.4.0-beta</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/09/benchmarks.html">ql.io Baseline Benchmarks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/12/17/no.de.html">ql.io on Joyent's no.de</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/12/16/milestone.html">Milestone 6</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/12/08/milestone.html">Milestone 5</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - ql.io -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'qlioblog';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

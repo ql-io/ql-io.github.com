@@ -1,0 +1,505 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ql.io Baseline Benchmarks - ql.io blog</title>
+  <meta name="author" content="ql.io">
+
+  
+  <meta name="description" content="One of the key visible benefits of ql.io is that it eliminates the code noise that
+is common in writing HTTP client apps. As a DSL for writing HTTP &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ql-io.github.com/2012/01/09/benchmarks.html">
+  <link href="/favicon.ico" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="ql.io blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-21835406-5']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <p class="top-links">
+    <span style="float:left"><a href="/">ql.io blog</a></span>
+    <a href="http://ql.io/">project</a> |
+    <a href="https://github.com/ql-io/ql.io/">github</a> |
+    <a href="/blog/archives">archives</a> |
+    <a href="/atom.xml">subscribe</a>
+</p>
+
+
+
+  <nav role="navigation"><!--<ul class="subscription" data-subscription="rss">-->
+  <!--<li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>-->
+  <!---->
+<!--</ul>-->
+  <!---->
+<!--<form action="http://google.com/search" method="get">-->
+  <!--<fieldset role="search">-->
+    <!--<input type="hidden" name="q" value="site:ql-io.github.com" />-->
+    <!--<input class="search" type="text" name="q" results="0" placeholder="Search"/>-->
+  <!--</fieldset>-->
+<!--</form>-->
+  <!---->
+<!--<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="https://github.com/ql-io/ql.io/">Github</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+-->
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">ql.io Baseline Benchmarks</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-09T00:00:00-08:00" pubdate data-updated="true">Jan 9<span>th</span>, 2012</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+      <p>
+        
+  
+
+
+<span class="byline author vcard">Posted by <a href="http://github.com/s3u">Subbu Allamaraju</a></span>
+
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>One of the key visible benefits of <a href="http://ql.io">ql.io</a> is that it eliminates the code noise that
+is common in writing HTTP client apps. As a DSL for writing HTTP client code, it focuses on
+automating the task of making multiple HTTP requests and processing responses in the best order
+possible taking care of paralleization, orchestration, projections and normalizations behind the
+scenes.</p>
+
+<p>In this post, I would like to present the baseline performance benchmarks of ql.io running on
+node.js 0.4.12. Though I have done some ad hoc tests in the last 2-3 months for hardware sizing
+purposes, this is my first systematic attempt.</p>
+
+<!-- more -->
+
+
+<p>Since this post is long, here is a quick summary for the &#8220;TL;DR&#8221;.</p>
+
+<ul>
+<li>For simple scripts - such a query using a <code>select</code> statement to get data from an HTTP API, ql.io
+can handle 2400+ requests/sec at various concurrency levels ranging from 100 to 500.</li>
+<li>For scripts involving dependencies between statements (such as statement B needing input from
+results of statement A), thoughput drops almost linearly and proportionately. For instance, for
+scenario B below, ql.io can handle nearly 1000 requests/sec.</li>
+<li>The conventional wisdom of using <code>n</code> worker processes where <code>n</code> is the number of CPU threads
+provides a reasonable default for all practical purposes but tuning the number of worker processes
+is a good exericise to do. All the test scenarios below yielded better numebers with <code>5*n</code>
+workers. Scenario D, which involves a non-trivial amount of CPU bound work, benefitted the most
+from the increased number of worker processes.</li>
+</ul>
+
+
+<p>You can find the raw output files of test runs on <a href="https://github.com/ql-io/ql.io-perf">github</a>.
+The application used for these tests is on <a href="https://github.com/ql-io/ql.io-site">github</a>. All the
+ql.io modules used by the app are on npmjs.org.</p>
+
+<h2>Test Environment</h2>
+
+<p>The test environment is based on the folllowing, each running Ubuntu, sititng under my desk at
+work.</p>
+
+<ul>
+<li>An Intel Xeon E5645 workstation with 6 cores (12 CPU threads) and 24GB RAM running the
+<a href="https://github.com/ql-io/ql.io-site">ql.io-site</a> app on node.js 0.4.12 with 12 worker processes.</li>
+<li>An Intel Xeon E5507 workstation with 4 cores (8 CPU threads) with 12GB RAM running apachebench.</li>
+<li>An Intel Xeon E5630 workstation with 4 cores (8 CPU threads) with 24GB RAM running Apache
+Traffic Server (ATS) 3.0.1 as a forward proxy for all outgoing HTTP requests. The cache is primed
+before running benchmarks to avoid making requests to any other machines.</li>
+</ul>
+
+
+<p>All these are running Ubuntu 11.04.</p>
+
+<h2>Test Scenarios</h2>
+
+<p>These tests cover a range of aggregation and orchestration scenarios possible with ql.io and show
+how ql.io behaves under varying loads.</p>
+
+<h3>Scenario A</h3>
+
+<pre class="brush: sql toolbar: false;">
+select * from twitter.search where q = "ql.io"
+</pre>
+
+
+<p>This scenario involves sending a HTTP GET request to <code>http://search.twitter.com/search.json</code>,
+parsing the JSON response, and writing it back to the client&#8217;s response.</p>
+
+<h3>Scenario B</h3>
+
+<pre class="brush: sql toolbar: false;">
+select id as id, from_user_name as user_name, text as text from twitter.search where q = "ql.io";
+</pre>
+
+
+<p>This scenario is similar to scenario A except the following:</p>
+
+<ul>
+<li>Extract <code>results</code> array from the response and extracts <code>id</code>, <code>from_user_name</code>, and <code>text</code> for
+each result.</li>
+<li>Assemble the projected fields into an object.</li>
+<li>Write all the objects as an array into the client&#8217;s response.</li>
+</ul>
+
+
+<h3>Scenario C</h3>
+
+<pre class="brush: sql toolbar: false;">
+select ItemID, ViewItemURLForNaturalSearch, Location from details where itemId in
+    (select itemId from finditems where keywords='mini cooper');
+</pre>
+
+
+<p>This scenario involves finding IDs of items from one API and sending those IDs to another API to
+get details as follows:</p>
+
+<ul>
+<li>Send an HTTP request to <code>http://svcs.ebay.com/services/search/FindingService/</code>, parse the JSON
+response, and extract the array of items by selecting the
+<code>findItemsByKeywordsResponse.searchResult.item</code> field of the response.</li>
+<li>For each item in the array, project the item&#8217;s ID. Collect the IDs into an array.</li>
+<li>Then send an HTTP request to <code>http://open.api.ebay.com/shopping</code> with all the item IDs.</li>
+<li>Parse the JSON response, select the <code>Item</code> array from the response, and project each <code>Item</code> to
+extract <code>ItemID</code>, <code>ViewItemURLForNaturalSearch</code>, and <code>Location</code> fields. Assemble the projected
+fields into an array.</li>
+<li>Write all the arrays to the client&#8217;s response as an array or arrays.</li>
+</ul>
+
+
+<h3>Scenario D</h3>
+
+<pre class="brush: sql toolbar: false;">
+prodid = select ProductID[0].Value from eBay.FindProducts where
+    QueryKeywords = 'macbook pro';
+details = select * from eBay.ProductDetails where
+    ProductID in ('{prodid}') and ProductType = 'Reference';
+reviews = select * from eBay.ProductReviews where
+    ProductID in ('{prodid}') and ProductType = 'Reference';
+
+return select d.ProductID[0].Value as id, d.Title as title,
+    d.ReviewCount as reviewCount, r.ReviewDetails.AverageRating as rating
+    from details as d, reviews as r
+    where d.ProductID[0].Value = r.ProductID.Value
+    via route '/myapi' using method get;
+</pre>
+
+
+<p>The implementation details for this script are a bit more involved, but at a high level, here is
+what happens under the hood:</p>
+
+<ul>
+<li>Find the script when the client submits a request to the script through a route <code>/myapi</code>.</li>
+<li>Send a HTTP request to <code>http://open.api.ebay.com/shopping?callname=FindProducts</code> with a keyword
+and extract product IDs from the response.</li>
+<li>Send <code>5</code> HTTP requests to <code>http://open.api.ebay.com/shopping?callname=FindProducts</code> with the
+product IDs found and extract the details.</li>
+<li>Send <code>5</code> HTTP requests to <code>http://open.api.ebay.com/shopping?callname=FindReviewsAndGuides</code> with
+the product IDs found and extract the reviews.</li>
+<li>Once the <code>10</code> requests complete, join details and reviews by matching responses by IDs, and
+extract the selected fields into an object.</li>
+<li>Return an array of objects with each object containing the selected fields.</li>
+</ul>
+
+
+<p>This script covers most of the code paths of ql.io. See <a href="http://ql.io/docs/build-an-app">Build an
+App</a> for a step by step description of this scenario</p>
+
+<h3>Differences Between Scenarios</h3>
+
+<ul>
+<li>Both scenario A and B are mostly IO bound.</li>
+<li>Scenario C is also mostly IO bound, but it makes two HTTP requests in sequence as the outer
+<code>select</code> depends on the results of the <code>inner</code> select. The second request is made after the first
+one completes.</li>
+<li>Scenario D involves making <code>11</code> HTTP requests, parsing and projecting response fields, and joining
+members of responses of the second and third statements. These responses are unsorted, and joining
+them by a matching product ID takes O(n<sup>2)</sup> steps - in this case 25. Yes - this can be improved -
+but <a href="http://calendar.perfplanet.com/2011/measure-twice-cut-once/">let&#8217;s measure twice before cutting
+once</a>.</li>
+</ul>
+
+
+<h2>Test Settings</h2>
+
+<p>All tests are done using <code>ab -k</code> to maintain persistent connections from the client to the server.</p>
+
+<p>The ql.io app is run with <code>12</code> node.js worker processes managed by
+<a href="http://learnboost.github.com/cluster/">cluster</a>.</p>
+
+<h2>First Round Results</h2>
+
+<h3>Throughput</h3>
+
+<p>Here are the throughput results for concurrency ranging from 100 to 500.</p>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js"> {"dataSourceUrl":"//docs.google.com/a/subbu.org/spreadsheet/tq?key=0ApntcBgpHeZldFREOFlGeXVWdzZZc3lNSld1aWZqdVE&transpose=0&headers=1&range=A3%3AE8&gid=0&pub=1","options":{"reverseCategories":false,"curveType":"","titleX":"Concurrency","backgroundColor":"#FFFFFF","pointSize":0,"width":600,"lineWidth":2,"logScale":false,"hAxis":{"maxAlternations":1},"hasLabelsColumn":true,"vAxes":[{"title":"Requests/sec","minValue":null,"viewWindowMode":"pretty","viewWindow":{"min":null,"max":null},"maxValue":null},{"viewWindowMode":"pretty","viewWindow":{}}],"title":"Throughput (12 workers)","height":371,"interpolateNulls":false,"legend":"right","reverseAxis":false},"state":{},"view":"{\"columns\":[0,1,2,3,4]}","chartType":"LineChart","chartName":"Throughput"} </script>
+
+
+<h3>Mean Response Times</h3>
+
+<p>The corresponding chart showing the mean response time for the same range of concurrency is below.</p>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js"> {"dataSourceUrl":"//docs.google.com/a/subbu.org/spreadsheet/tq?key=0ApntcBgpHeZldFREOFlGeXVWdzZZc3lNSld1aWZqdVE&transpose=0&headers=1&range=A27%3AE32&gid=0&pub=1","options":{"reverseCategories":false,"curveType":"","titleX":"Concurrency","pointSize":0,"backgroundColor":"#FFFFFF","lineWidth":2,"logScale":false,"hAxis":{"maxAlternations":1},"hasLabelsColumn":true,"vAxes":[{"title":"Time for 80% requests to complete","minValue":null,"viewWindowMode":"pretty","viewWindow":{"min":null,"max":null},"maxValue":null},{"viewWindowMode":"pretty","viewWindow":{}}],"title":"Mean response time","interpolateNulls":false,"legend":"right","reverseAxis":false,"width":600,"height":371},"state":{},"view":"{\"columns\":[0,1,2,3,4]}","chartType":"LineChart","chartName":"Chart 2"} </script>
+
+
+<h2>Effect of Number of Workers</h2>
+
+<p>In these tests, scenario D fared badly as it includes a mixture of IO and CPU workloads. The CPU
+workload is not predominant but is not insignificant either. Here is a chart of the CPU data
+captured using <code>dstat</code> at a concurrency level of 200 for sceanrio D.</p>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js"> {"dataSourceUrl":"//docs.google.com/a/subbu.org/spreadsheet/tq?key=0ApntcBgpHeZldFREOFlGeXVWdzZZc3lNSld1aWZqdVE&transpose=0&headers=1&range=A7%3AG443&gid=5&pub=1","options":{"vAxes":[{"viewWindowMode":"pretty","viewWindow":{}},{"viewWindowMode":"pretty","viewWindow":{}}],"displayAnnotations":true,"height":371,"width":709,"displayRangeSelector":true,"displayZoomButtons":true,"hAxis":{"maxAlternations":1},"hasLabelsColumn":true,"wmode":"opaque"},"state":{},"view":"{\"columns\":[0,1,2,3,4,5,6]}","chartType":"AnnotatedTimeLine","chartName":"CPU Load for Scenario A with 12 workers"} </script>
+
+
+<p>This confirms that there is a fair bit of CPU bounded work going on. How does the number of
+workers influence such a scenario? I repeated the tests varying the number of worker processes.</p>
+
+<p>The chart below shows the number of requests per second for Scenario D as I changed the number of
+workers from 12 to 96 in increments of 12. All the test runs were done at a concurrency level of
+100.</p>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js"> {"dataSourceUrl":"//docs.google.com/a/subbu.org/spreadsheet/tq?key=0ApntcBgpHeZldFREOFlGeXVWdzZZc3lNSld1aWZqdVE&transpose=0&headers=1&range=A4%3AB12&gid=2&pub=1","options":{"reverseCategories":false,"curveType":"","titleX":"Number of workers","pointSize":0,"backgroundColor":"#FFFFFF","lineWidth":2,"logScale":false,"hasLabelsColumn":true,"hAxis":{"maxAlternations":1},"vAxes":[{"title":"Req/sec","minValue":null,"viewWindowMode":"pretty","viewWindow":{"min":null,"max":null},"maxValue":null},{"viewWindowMode":"pretty","viewWindow":{}}],"title":"","interpolateNulls":false,"legend":"right","reverseAxis":false,"width":600,"height":371},"state":{},"view":"{\"columns\":[0,1]}","chartType":"LineChart","chartName":"Chart 3"} </script>
+
+
+<p>The number of requests per sec increase from 192 to 384 as I increased the number of workers from
+12 to 96. The improvement is less significant after 60 workers.</p>
+
+<p>Here is chart for the mean response time which shows a similar improvement.</p>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js"> {"dataSourceUrl":"//docs.google.com/a/subbu.org/spreadsheet/tq?key=0ApntcBgpHeZldFREOFlGeXVWdzZZc3lNSld1aWZqdVE&transpose=0&headers=1&range=D4%3AE12&gid=2&pub=1","options":{"series":{"0":{"color":"#6aa84f"}},"reverseCategories":false,"curveType":"","titleX":"Number of workers","pointSize":0,"backgroundColor":"#FFFFFF","lineWidth":2,"logScale":false,"hAxis":{"maxAlternations":1},"hasLabelsColumn":true,"vAxes":[{"title":"Mean response time (msec)","minValue":null,"viewWindowMode":"pretty","viewWindow":{"min":null,"max":null},"maxValue":null},{"viewWindowMode":"pretty","viewWindow":{}}],"title":"","interpolateNulls":false,"legend":"none","reverseAxis":false,"width":600,"height":371},"state":{},"view":"{\"columns\":[0,1]}","chartType":"LineChart","chartName":"Chart 4"} </script>
+
+
+<p>The flatness of these charts with increased worker count can easily be explained by looking at the
+CPU again. The chart below shows the CPU data at a cocurrency level of 200 for scenario D with a
+worker count of 96.</p>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js"> {"dataSourceUrl":"//docs.google.com/a/subbu.org/spreadsheet/tq?key=0ApntcBgpHeZldFREOFlGeXVWdzZZc3lNSld1aWZqdVE&transpose=0&headers=1&range=A7%3AG288&gid=6&pub=1","options":{"displayAnnotations":true,"vAxes":[{"viewWindowMode":"pretty","viewWindow":{}},{"viewWindowMode":"pretty","viewWindow":{}}],"wmode":"opaque","hasLabelsColumn":true,"hAxis":{"maxAlternations":1},"width":742,"height":371},"state":{},"view":"{\"columns\":[0,1,2,3,4,5,6]}","chartType":"AnnotatedTimeLine","chartName":"Chart 9"} </script>
+
+
+<p>The chart below shows the effect of increasing the worker count from 12 to 96 across all test
+scenarios.</p>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js"> {"dataSourceUrl":"//docs.google.com/a/subbu.org/spreadsheet/tq?key=0ApntcBgpHeZldFREOFlGeXVWdzZZc3lNSld1aWZqdVE&transpose=0&headers=1&range=A2%3AI7&gid=1&pub=1","options":{"vAxes":[{"title":"Requests/sec","minValue":null,"viewWindowMode":"pretty","viewWindow":{"min":null,"max":null},"maxValue":null},{"viewWindowMode":"pretty","viewWindow":{}}],"reverseCategories":false,"title":"","titleX":"Concurrency","backgroundColor":"#FFFFFF","legend":"right","logScale":false,"reverseAxis":false,"hasLabelsColumn":true,"hAxis":{"maxAlternations":1},"isStacked":false,"width":1074,"height":340},"state":{},"view":"{\"columns\":[0,1,2,3,4,5,6,7,8]}","chartType":"ColumnChart","chartName":"Chart 5"} </script>
+
+
+
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js"> {"dataSourceUrl":"//docs.google.com/a/subbu.org/spreadsheet/tq?key=0ApntcBgpHeZldFREOFlGeXVWdzZZc3lNSld1aWZqdVE&transpose=0&headers=1&range=A34%3AI39&gid=1&pub=1","options":{"vAxes":[{"title":"Mean response time (msec)","minValue":null,"viewWindowMode":"pretty","viewWindow":{"min":null,"max":null},"maxValue":null},{"viewWindowMode":"pretty","viewWindow":{}}],"reverseCategories":false,"title":"","titleX":"Concurrency","backgroundColor":"#FFFFFF","legend":"right","logScale":false,"reverseAxis":false,"hAxis":{"maxAlternations":1},"hasLabelsColumn":false,"isStacked":false,"width":972,"height":402},"state":{},"view":"{\"columns\":[0,1,2,3,4,5,6,7,8]}","chartType":"ColumnChart","chartName":"Chart 6"} </script>
+
+
+<h2>What About Memory</h2>
+
+<p>Below is a chart of the memory usage with 96 workers for scenario D at a concurrency level of 200.</p>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js"> {"dataSourceUrl":"//docs.google.com/a/subbu.org/spreadsheet/tq?key=0ApntcBgpHeZldFREOFlGeXVWdzZZc3lNSld1aWZqdVE&transpose=0&headers=1&range=A299%3AE581&gid=6&pub=1","options":{"displayAnnotations":true,"vAxes":[{"viewWindowMode":"pretty","viewWindow":{}},{"viewWindowMode":"pretty","viewWindow":{}}],"wmode":"opaque","hasLabelsColumn":true,"hAxis":{"maxAlternations":1},"width":708,"height":371},"state":{},"view":"{\"columns\":[0,1,2,3,4]}","chartType":"AnnotatedTimeLine","chartName":"Chart 12"} </script>
+
+
+<p>The lines remained nearly flat for the duration of the test.</p>
+
+<h2>Summary</h2>
+
+<p>The goal of this exercise is to set a baseline for future work. The scenarios I used show a range of
+scripts that cover most of the current capabilities of ql.io.</p>
+
+<p>Here are few key take-aways:</p>
+
+<ul>
+<li>ql.io is designed for IO bound workloads. However, data aggregation and orchestration often
+involves some CPU bound work such as projections and joins. This is unavoidable. I suspect that
+the same is the case with many typical uses of node.js.</li>
+<li>On commodity hardware with commodity network layer, my tests show that ql.io can do 400-2400
+requests/sec depending on the nature of the work involved. Your mileage may vary.</li>
+<li>Use of as many workers as there are CPU threads available is a good starting point, but tuning
+the number based on the characteristics of the app may yield better results.</li>
+</ul>
+
+
+<p>We&#8217;re currently working on upgrading ql.io to node.js 0.6.x. See the <a href="https://github.com/ql-io/ql.io/tree/0.4">0.4 branch on
+github</a>. Watchout for a repeat of these tests on node.js
+0.6.x.</p>
+</div>
+
+
+  <footer>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ql-io.github.com/2012/01/09/benchmarks.html" data-via="" data-counturl="http://ql-io.github.com/2012/01/09/benchmarks.html" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2011/12/17/no.de.html" title="Previous Post: ql.io on Joyent's no.de">&laquo; ql.io on Joyent's no.de</a>
+      
+      
+        <a class="basic-alignment right" href="/2012/01/17/v0.4-beta.html" title="Next Post: ql.io 0.4.0-beta">ql.io 0.4.0-beta &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2012/03/12/build-your-own-apis.html">Build Your Own APIs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/02/22/making-peace.html">Making Peace with HTTP APIs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/02/13/v0.4.html">ql.io 0.4.0</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/02/12/nodepdx-slides.html">Slides from NodePDX</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/24/node-summit-slides.html">Slides from Node Summit</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/17/v0.4-beta.html">ql.io 0.4.0-beta</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/09/benchmarks.html">ql.io Baseline Benchmarks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/12/17/no.de.html">ql.io on Joyent's no.de</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/12/16/milestone.html">Milestone 6</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/12/08/milestone.html">Milestone 5</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - ql.io -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'qlioblog';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

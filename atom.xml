@@ -1,0 +1,775 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[ql.io blog]]></title>
+  <link href="http://ql-io.github.com/atom.xml" rel="self"/>
+  <link href="http://ql-io.github.com/"/>
+  <updated>2012-03-12T18:19:19-07:00</updated>
+  <id>http://ql-io.github.com/</id>
+  <author>
+    <name><![CDATA[ql.io]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Build Your Own APIs]]></title>
+    <link href="http://ql-io.github.com/2012/03/12/build-your-own-apis.html"/>
+    <updated>2012-03-12T00:00:00-07:00</updated>
+    <id>http://ql-io.github.com/2012/03/12/build-your-own-apis</id>
+    <content type="html"><![CDATA[<p>A route in ql.io is a new consumer-optimized HTTP interface. Routes superimpose a simple and familiar HTTP interface on ql.io scripts without needing to specify an elaborate script in the request. In other words, routes make ql.io a platform to &#8220;build your own APIs&#8221;.</p>
+
+<p>Having built this capability, in this post I want to highlight some potential ways to take advantage of routes.</p>
+
+<!-- more -->
+
+
+<h2>Discovery</h2>
+
+<p>Let&#8217;s imagine you built some new APIs using ql.io. How can your users find more about those APIs? Here is how.</p>
+
+<p>Every ql.io now includes a special URI <code>http://{host}:{port}/api</code> that lets you browse through the following:</p>
+
+<ul>
+<li>List of routes</li>
+<li>For each route, a URI template (or a URI), and HTTP method supported.</li>
+<li>For each route, the tables used</li>
+<li>For each table, the original HTTP resource that it maps to.</li>
+</ul>
+
+
+<p>Here is an example.</p>
+
+<p><img src="http://ql-io.github.com/images/2012-03-12-byoa-1.png" alt="API browsing" /></p>
+
+<p>Go to <a href="http://ql.io/apis">http://ql.io/apis</a> to try it out. Though this capability is automatic, it needs a couple of actions as you build tables and routes.</p>
+
+<h2>Parametrizing</h2>
+
+<p>Let us consider the following script.</p>
+
+<pre><code>keyword = "ql.io";
+web = select web:Title, web:Url, web:Description from bing.search where q = "{keyword}";
+tweets = select id as id, from_user_name as user_name, text as text
+    from twitter.search where q = "{keyword}";
+
+return {
+  "keyword": "{keyword}",
+  "web": "{web}",
+  "tweets": "{tweets}"
+}
+</code></pre>
+
+<p>Since <code>keywords</code> is hardcoded in this script, it is only capable of finding &#8220;ql.io&#8221; from twitter and bing. You can parameterize this script by defining it as a route.</p>
+
+<pre><code>web = select web:Title, web:Url, web:Description from bing.search where q = "{keyword}";
+tweets = select id as id, from_user_name as user_name, text as text
+    from twitter.search where q = "{keyword}";
+
+return {
+  "keyword": "{keyword}",
+  "web": "{web}",
+  "tweets": "{tweets}"
+} via route '/search?q={keyword}' using method get;
+</code></pre>
+
+<p>With this route, you can use <code>http://{host}:{port}/search?q={your keyword here}</code> to run the script. Try this route at <a href="http://ql.io/search?q=ql.io">http://ql.io/search?q=ql.io</a>.</p>
+
+<h2>Similar but Different</h2>
+
+<p>There are other ways to parameterize routes. Let&#8217;s say, you would like to provide the following resources to client apps.</p>
+
+<ol>
+<li><code>http://{host}:{port}/item/location?itemid={itemid}</code> with method <code>GET</code>: Retrieve geo-location for a given item id.</li>
+<li><code>http://{host}:{port}/item/location?keyword={keyword}</code> with method <code>GET</code>: Given a keyword, find matching items, and then find and return their geo-locations.</li>
+<li><code>http://{host}:{port}/item/location?itemid={itemid}&amp;keyword={keyword}</code> with method <code>GET</code>: Given a keyword and item ID, find geolocatons of all items matching the keyword, and also for the item ID. Such a response may be useful when you want to show locations of a given items, but also other items that match the keyword.</li>
+</ol>
+
+
+<p>Notice all the routes above have the same HTTP method <code>GET</code> and the same path <code>/item/location</code> but differ in query parameters. But as the aggregation logic may be different for each of these scripts, you can define three different scripts for the same path.</p>
+
+<p>Here is a route for <code>/item/location?itemid={itemid}</code></p>
+
+<pre><code>-- Matches request  /item/location?itemid=140716431558 
+--
+return select e.ItemID as id, e.Title as title, e.ViewItemURLForNaturalSearch as url, 
+              g.geometry.location as latlng
+              from details  as e, google.geocode as g
+               where e.itemId = "{itemid}"
+                     and g.address = e.Location
+       via route '/item/location?itemid={itemid}' using method get;
+</code></pre>
+
+<p>Here is the route for <code>/item/location?keyword={keyword}</code>.</p>
+
+<pre><code>-- Matches request  /item/location?keyword=ipad 
+--
+return select e.ItemID as id, e.Title as title, e.ViewItemURLForNaturalSearch as url, 
+             g.geometry.location as latlng
+             from details  as e, google.geocode as g
+             where e.itemId in (select itemId from finditems where keywords = "{keyword}")
+                   and g.address = e.Location
+       via route '/item/location?keyword={keyword}' using method get;
+</code></pre>
+
+<p>Finally, here is the route for <code>/item/location?itemid={itemid}&amp;keyword={keyword}</code></p>
+
+<pre><code>-- Matches request  /item/location?keyword=ipad&amp;itemid=140716431558 
+--
+keywordResult =  select e.ItemID as id, e.Title as title, e.ViewItemURLForNaturalSearch as url, 
+                        g.geometry.location as latlng
+                        from details  as e, google.geocode as g
+                        where e.itemId in (select itemId from finditems where keywords = "{keyword}")
+                              and g.address = e.Location
+itemidResult =  select e.ItemID as id, e.Title as title, e.ViewItemURLForNaturalSearch as url, 
+                       g.geometry.location as latlng
+                       from details  as e, google.geocode as g
+                       where e.itemId = "{itemid}"
+                             and g.address = e.Location
+return {
+    "keywordResult": "{keywordResult}",
+    "itemidResult" : "{itemidResult}"
+} via route '/item/location?itemid={itemid}&amp;keyword={keyword}' using get;
+</code></pre>
+
+<p>Given a request URI, ql.io&#8217;s routing engine is capable of matching the request to one of these scripts.</p>
+
+<h2>Non-Idempotent and Unsafe</h2>
+
+<p>Route parameterization is not limited to HTTP <code>GET</code> alone. You can allow clients to supply bodies with <code>POST</code>, <code>PUT</code>, <code>PATCH</code> and <code>DELETE</code> requests.</p>
+
+<p>Consider the following table for bitly APIs.</p>
+
+<pre><code>create table bitly.shorten
+  on insert get from "http://api.bitly.com/v3/shorten?login={^login}&amp;apiKey={^apikey}&amp;longUrl={^longUrl}&amp;format={format}"
+            using defaults apikey = "{config.bitly.apikey}", login = "{config.bitly.login}", format = "json"
+            using patch 'bitly.js'
+            resultset 'data.url'
+  on select get from "http://api.bitly.com/v3/expand?login={^login}&amp;apiKey={^apikey}&amp;shortUrl={^shortUrl}&amp;format={format}"
+            using defaults apikey = "{config.bitly.apikey}", login = "{config.bitly.login}", format = "json"
+            using patch 'bitly.js'
+            resultset 'data.expand'
+</code></pre>
+
+<p>To shorten a URI, you may want to add a route that uses HTTP method <code>POST</code>.</p>
+
+<pre><code>return insert into bitly.shorten (longUrl) values ('{uri}')
+    via route '/bitly/shorten' using method post;
+</code></pre>
+
+<p>You can then use one of the following URIs to shorten a URI.</p>
+
+<pre><code>curl http://localhost:3000/bitly/shorten -X POST 
+  -H 'Content-Type: application/json' 
+  -d '{"uri": "http://www.ebay.com"}'
+
+curl http://localhost:3000/bitly/shorten -X POST 
+  -H 'Content-Type: application/xml' 
+  -d '&lt;uri&gt;http://www.ebay.com&lt;/uri&gt;'
+
+curl http://localhost:3000/bitly/shorten -X POST 
+  -H 'Content-Type: application/x-www-form-urlencoded' 
+  -d 'uri=http://www.ebay.com'
+</code></pre>
+
+<p>In each case, ql.io&#8217;s routing engine will coerce the body into an associative array, and substitutes the values for tokens in the routing script or tables used by the routing script.</p>
+
+<h2>Markdown</h2>
+
+<p>ql.io scripts can include <a href="http://daringfireball.net/projects/markdown/">markdown</a> based line comments that begin with <code>--</code>. ql.io treats comments preceding <code>return</code> statements in routing scripts, and comments preceding <code>create table</code> statements as documentation.</p>
+
+<pre><code>-- Use this resource to shorten a URI using bitly.
+
+return insert into bitly.shorten (longUrl) values ('{uri}')
+    via route '/bitly/shorten' using method post;
+</code></pre>
+
+<p>We&#8217;ve some work to do to support <a href="https://github.com/ql-io/ql.io/issues/340">multi-line comments</a>, but you get the idea!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Making Peace with HTTP APIs]]></title>
+    <link href="http://ql-io.github.com/2012/02/22/making-peace.html"/>
+    <updated>2012-02-22T00:00:00-08:00</updated>
+    <id>http://ql-io.github.com/2012/02/22/making-peace</id>
+    <content type="html"><![CDATA[<p>Once in a while you come across an HTTP API that uses HTTP in complicated and incorrect ways. There
+are many examples of this on the Web today including those from
+<a href="http://developer.ebay.com/devzone/xml/docs/reference/ebay/GetMyeBayBuying.html">eBay</a>,
+<a href="http://docs.amazonwebservices.com/amazonswf/latest/developerguide/UsingJSON-swf.html">Amazon</a>,
+<a href="http://code.google.com/apis/friendconnect/docs/opensocial_rest_rpc.html">Google</a>,
+<a href="http://www.bing.com/toolbox/bingdeveloper/">Microsoft</a> and many many others. These can be hard to
+use as they require you to follow proprietary styles for constructing requests and parsing
+responses. Some of those also don&#8217;t work well with common HTTP infrastructure like caches.</p>
+
+<p>In this post, I would like to show how you can, in four simple steps, use ql.io to hide the
+complexity of such APIs.</p>
+
+<!-- more -->
+
+
+<p>To illustrate, let me take eBay&#8217;s <a href="http://developer.ebay.com/DevZone/XML/docs/Reference/eBay/PlaceOffer.html">PlaceOffer API</a>
+that lets an eBay buyer place an offer for an item listed on eBay. This example may be more complex than other similar
+APIs that you have encoutered, but it helps me drive the point.</p>
+
+<p>This API requires you to send a POST request with some custom headers and an XML document in the
+body.</p>
+
+<pre><code>POST /ws/api.dll HTTP/1.1
+Host: api.ebay.com/ws/api.dll
+Content-Type: application/xml; charset=UTF-8
+X-EBAY-API-DEV-NAME: developer ID
+X-EBAY-API-APP-NAME: app ID
+X-EBAY-API-CERT-NAME: cert ID,
+X-EBAY-API-CALL-NAME: PlaceOffer
+X-EBAY-API-COMPATIBILITY-LEVEL: version
+X-EBAY-API-SITEID: site ID
+</code></pre>
+
+<p>See <a href="http://tinyurl.com/76q6e7q">developer docs</a> for more details of these headers.</p>
+
+<p>The body of the request is an XML document. An example is below.</p>
+
+<pre><code>&lt;PlaceOfferRequest xmlns="urn:ebay:apis:eBLBaseComponents"&gt;
+  &lt;ErrorLanguage&gt;en_US&lt;/ErrorLanguage&gt;
+  &lt;EndUserIP&gt;192.168.255.255&lt;/EndUserIP&gt;
+  &lt;ItemID&gt;110096039601&lt;/ItemID&gt;
+  &lt;Offer&gt;
+    &lt;Action&gt;Bid&lt;/Action&gt;
+    &lt;MaxBid currencyID="USD"&gt;20.00&lt;/MaxBid&gt;
+    &lt;Quantity&gt;1&lt;/Quantity&gt;
+  &lt;/Offer&gt;
+  &lt;RequesterCredentials&gt;
+    &lt;eBayAuthToken&gt;ABC...123&lt;/eBayAuthToken&gt;
+  &lt;/RequesterCredentials&gt;
+  &lt;WarningLevel&gt;High&lt;/WarningLevel&gt;
+&lt;/PlaceOfferRequest&gt;
+</code></pre>
+
+<p>A response from this API looks like the following:</p>
+
+<pre><code>&lt;PlaceOfferResponse xmlns="urn:ebay:apis:eBLBaseComponents"&gt;
+  &lt;Timestamp&gt;2012-02-03T18:06:51.230Z&lt;/Timestamp&gt;
+  &lt;Ack&gt;Success&lt;/Ack&gt;
+  &lt;Version&gt;757&lt;/Version&gt;
+  &lt;Build&gt;E757_CORE_BUNDLED_14364711_R1&lt;/Build&gt;
+  &lt;UsageData&gt;MTMyOTUyMTQ2LzE1MzczOw**&lt;/UsageData&gt;
+  &lt;SellingStatus&gt;
+    &lt;ConvertedCurrentPrice currencyID="USD"&gt;1.0&lt;/ConvertedCurrentPrice&gt;
+    &lt;CurrentPrice currencyID="USD"&gt;1.0&lt;/CurrentPrice&gt;
+    &lt;HighBidder&gt;
+      &lt;UserID&gt;testuser_bountifulbuyer&lt;/UserID&gt;
+    &lt;/HighBidder&gt;
+    &lt;MinimumToBid currencyID="USD"&gt;1.25&lt;/MinimumToBid&gt;
+  &lt;/SellingStatus&gt;
+&lt;/PlaceOfferResponse&gt;
+</code></pre>
+
+<p>Here is how you can use ql.io to simplify this.</p>
+
+<h3>Step 0: Create an App</h3>
+
+<p>Create a ql.io app.</p>
+
+<pre><code>mkdir myapp
+cd myapp
+curl https://raw.github.com/ql-io/ql.io/master/modules/template/init.sh | bash
+bin/start.sh
+</code></pre>
+
+<p>See <a href="http://ql.io/docs">docs</a> for more details.</p>
+
+<h3>Step 1: Create a Table</h3>
+
+<p>Place the following in <code>tables/placeoffer.ql</code>.</p>
+
+<script src="https://gist.github.com/1886983.js?file=gistfile1.sql"></script>
+
+
+<p>This step binds the API into the ql.io runtime so that you can use ql.io&#8217;s DSL to send requests
+and process responses.</p>
+
+<h3>Step 2: Describe the Shape of the Request Body</h3>
+
+<p>Place the following in <code>tables/placeoffer.xml.mu</code>.</p>
+
+<script src="https://gist.github.com/1886988.js?file=gistfile1.xml"></script>
+
+
+<p>This is just a mustache template. You can use <a href="http://embeddedjs.com/">EJS</a> too if you like.</p>
+
+<h3>Step 3: Create a Route</h3>
+
+<p>Place the following in <code>routes/placeoffer.ql</code></p>
+
+<script src="https://gist.github.com/1886996.js?file=gistfile1.sql"></script>
+
+
+<h3>Step 4: Use the API</h3>
+
+<pre><code>POST /offers?siteId=0&amp;itemId=your-item-id&amp;offer=your-offer&amp;action=your-action&amp;quantity=your-quantity
+Host: api.ebay.com/ws/api.dll
+Authorization: your auth token
+</code></pre>
+
+<p>This request returns JSON.</p>
+
+<h3>Step 5: Enjoy</h3>
+
+<p>No XML, no schemas, no SDKs. As an added benefit, you can combine this API with other APIs as you
+like using ql.io&#8217;s DSL.</p>
+
+<p>Why does this matter? If you have a legacy API that you can not afford to rewrite to use HTTP
+sanely, ql.io can help you hide it behind a saner interface.</p>
+
+<p>Thanks to <a href="https://github.com/jmrodriguez">Juan Rodriguez</a> for showing me this example.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ql.io 0.4.0]]></title>
+    <link href="http://ql-io.github.com/2012/02/13/v0.4.html"/>
+    <updated>2012-02-13T00:00:00-08:00</updated>
+    <id>http://ql-io.github.com/2012/02/13/v0.4</id>
+    <content type="html"><![CDATA[<p>Verson 0.4 of ql.io is out to npm today. Here is a quick summary of changes.</p>
+
+<ul>
+<li>Use native cluster module to start the app</li>
+<li>Upgrade all dependencies to the latest</li>
+<li>Limit response size to 10000000 bytes from upstream sources. You can change this with
+<code>maxResponseLength</code> in the config.</li>
+<li>Limit outgoing requests per statement to 50. You can change this with <code>maxRequests</code> in the config.</li>
+<li>Chain events for logging done with log-emitter.</li>
+<li>Add a new JSON based interface to browse tables and routes. Try <code>/routes</code> to start browsing.</li>
+<li>Integrate <a href="https://github.com/s3u/har-view">har-view</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Slides from NodePDX]]></title>
+    <link href="http://ql-io.github.com/2012/02/12/nodepdx-slides.html"/>
+    <updated>2012-02-12T00:00:00-08:00</updated>
+    <id>http://ql-io.github.com/2012/02/12/nodepdx-slides</id>
+    <content type="html"><![CDATA[<p>Here are the slides from my talk/demo on ql.io at <a href="http://nodepdx.github.com/">NodePDX</a>.</p>
+
+<div style="width:425px" id="__ss_11530669"> <strong style="display:block;margin:12px 0 4px"><a href="http://www.slideshare.net/sallamar/qlio-at-nodepdx" title="ql.io at NodePDX" target="_blank">ql.io at NodePDX</a></strong> <iframe src="http://www.slideshare.net/slideshow/embed_code/11530669" width="425" height="355" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe> <div style="padding:5px 0 12px"> View more <a href="http://www.slideshare.net/thecroaker/death-by-powerpoint" target="_blank">PowerPoint</a> from <a href="http://www.slideshare.net/sallamar" target="_blank">Subbu Allamaraju</a> </div> </div>
+
+
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Slides from Node Summit]]></title>
+    <link href="http://ql-io.github.com/2012/01/24/node-summit-slides.html"/>
+    <updated>2012-01-24T00:00:00-08:00</updated>
+    <id>http://ql-io.github.com/2012/01/24/node-summit-slides</id>
+    <content type="html"><![CDATA[<p>Here are the slides from the workshop on ql.io at the Node Summit titled
+&#8220;ql.io: Consuming HTTP at Scale&#8221;.</p>
+
+<div style="width:425px" id="__ss_11244206"> <strong style="display:block;margin:12px 0 4px"><a href="http://www.slideshare.net/sallamar/qlio-consuming-http-at-scale" title="ql.io: Consuming HTTP at Scale " target="_blank">ql.io: Consuming HTTP at Scale </a></strong> <iframe src="http://www.slideshare.net/slideshow/embed_code/11244206" width="425" height="355" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe> <div style="padding:5px 0 12px"> View more <a href="http://www.slideshare.net/thecroaker/death-by-powerpoint" target="_blank">PowerPoint</a> from <a href="http://www.slideshare.net/sallamar" target="_blank">Subbu Allamaraju</a> </div> </div>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ql.io 0.4.0-beta]]></title>
+    <link href="http://ql-io.github.com/2012/01/17/v0.4-beta.html"/>
+    <updated>2012-01-17T00:00:00-08:00</updated>
+    <id>http://ql-io.github.com/2012/01/17/v0.4-beta</id>
+    <content type="html"><![CDATA[<p>This is a beta release of ql.io on node.js 0.6.x.</p>
+
+<ul>
+<li>Use native cluster module to start the app</li>
+<li>Upgrade all dependencies to the latest</li>
+<li>Limit response size to 10000000 bytes from upstream sources. You can change this with
+<code>maxResponseLength</code> in the config.</li>
+<li>Limit outgoing requests per statement to 50. You can change this with <code>maxRequests</code> in the config.</li>
+<li>Chain events for logging done with log-emitter.</li>
+<li>Add a new JSON based interface to browse tables and routes. Try <code>/routes</code> to start browsing.</li>
+</ul>
+
+
+<p>If you are interested in running ql.io on node.js 0.4.x, use the
+<a href="https://github.com/ql-io/ql.io/tree/0.3">0.3 branch</a>.</p>
+
+<p>To create an app using ql.io 0.4 modules, follow the usual steps:</p>
+
+<pre><code> mkdir myapp
+ cd myapp
+ curl https://raw.github.com/ql-io/ql.io/master/modules/template/init.sh | bash
+ bin/start.sh
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ql.io Baseline Benchmarks]]></title>
+    <link href="http://ql-io.github.com/2012/01/09/benchmarks.html"/>
+    <updated>2012-01-09T00:00:00-08:00</updated>
+    <id>http://ql-io.github.com/2012/01/09/benchmarks</id>
+    <content type="html"><![CDATA[<p>One of the key visible benefits of <a href="http://ql.io">ql.io</a> is that it eliminates the code noise that
+is common in writing HTTP client apps. As a DSL for writing HTTP client code, it focuses on
+automating the task of making multiple HTTP requests and processing responses in the best order
+possible taking care of paralleization, orchestration, projections and normalizations behind the
+scenes.</p>
+
+<p>In this post, I would like to present the baseline performance benchmarks of ql.io running on
+node.js 0.4.12. Though I have done some ad hoc tests in the last 2-3 months for hardware sizing
+purposes, this is my first systematic attempt.</p>
+
+<!-- more -->
+
+
+<p>Since this post is long, here is a quick summary for the &#8220;TL;DR&#8221;.</p>
+
+<ul>
+<li>For simple scripts - such a query using a <code>select</code> statement to get data from an HTTP API, ql.io
+can handle 2400+ requests/sec at various concurrency levels ranging from 100 to 500.</li>
+<li>For scripts involving dependencies between statements (such as statement B needing input from
+results of statement A), thoughput drops almost linearly and proportionately. For instance, for
+scenario B below, ql.io can handle nearly 1000 requests/sec.</li>
+<li>The conventional wisdom of using <code>n</code> worker processes where <code>n</code> is the number of CPU threads
+provides a reasonable default for all practical purposes but tuning the number of worker processes
+is a good exericise to do. All the test scenarios below yielded better numebers with <code>5*n</code>
+workers. Scenario D, which involves a non-trivial amount of CPU bound work, benefitted the most
+from the increased number of worker processes.</li>
+</ul>
+
+
+<p>You can find the raw output files of test runs on <a href="https://github.com/ql-io/ql.io-perf">github</a>.
+The application used for these tests is on <a href="https://github.com/ql-io/ql.io-site">github</a>. All the
+ql.io modules used by the app are on npmjs.org.</p>
+
+<h2>Test Environment</h2>
+
+<p>The test environment is based on the folllowing, each running Ubuntu, sititng under my desk at
+work.</p>
+
+<ul>
+<li>An Intel Xeon E5645 workstation with 6 cores (12 CPU threads) and 24GB RAM running the
+<a href="https://github.com/ql-io/ql.io-site">ql.io-site</a> app on node.js 0.4.12 with 12 worker processes.</li>
+<li>An Intel Xeon E5507 workstation with 4 cores (8 CPU threads) with 12GB RAM running apachebench.</li>
+<li>An Intel Xeon E5630 workstation with 4 cores (8 CPU threads) with 24GB RAM running Apache
+Traffic Server (ATS) 3.0.1 as a forward proxy for all outgoing HTTP requests. The cache is primed
+before running benchmarks to avoid making requests to any other machines.</li>
+</ul>
+
+
+<p>All these are running Ubuntu 11.04.</p>
+
+<h2>Test Scenarios</h2>
+
+<p>These tests cover a range of aggregation and orchestration scenarios possible with ql.io and show
+how ql.io behaves under varying loads.</p>
+
+<h3>Scenario A</h3>
+
+<pre class="brush: sql toolbar: false;">
+select * from twitter.search where q = "ql.io"
+</pre>
+
+
+<p>This scenario involves sending a HTTP GET request to <code>http://search.twitter.com/search.json</code>,
+parsing the JSON response, and writing it back to the client&#8217;s response.</p>
+
+<h3>Scenario B</h3>
+
+<pre class="brush: sql toolbar: false;">
+select id as id, from_user_name as user_name, text as text from twitter.search where q = "ql.io";
+</pre>
+
+
+<p>This scenario is similar to scenario A except the following:</p>
+
+<ul>
+<li>Extract <code>results</code> array from the response and extracts <code>id</code>, <code>from_user_name</code>, and <code>text</code> for
+each result.</li>
+<li>Assemble the projected fields into an object.</li>
+<li>Write all the objects as an array into the client&#8217;s response.</li>
+</ul>
+
+
+<h3>Scenario C</h3>
+
+<pre class="brush: sql toolbar: false;">
+select ItemID, ViewItemURLForNaturalSearch, Location from details where itemId in
+    (select itemId from finditems where keywords='mini cooper');
+</pre>
+
+
+<p>This scenario involves finding IDs of items from one API and sending those IDs to another API to
+get details as follows:</p>
+
+<ul>
+<li>Send an HTTP request to <code>http://svcs.ebay.com/services/search/FindingService/</code>, parse the JSON
+response, and extract the array of items by selecting the
+<code>findItemsByKeywordsResponse.searchResult.item</code> field of the response.</li>
+<li>For each item in the array, project the item&#8217;s ID. Collect the IDs into an array.</li>
+<li>Then send an HTTP request to <code>http://open.api.ebay.com/shopping</code> with all the item IDs.</li>
+<li>Parse the JSON response, select the <code>Item</code> array from the response, and project each <code>Item</code> to
+extract <code>ItemID</code>, <code>ViewItemURLForNaturalSearch</code>, and <code>Location</code> fields. Assemble the projected
+fields into an array.</li>
+<li>Write all the arrays to the client&#8217;s response as an array or arrays.</li>
+</ul>
+
+
+<h3>Scenario D</h3>
+
+<pre class="brush: sql toolbar: false;">
+prodid = select ProductID[0].Value from eBay.FindProducts where
+    QueryKeywords = 'macbook pro';
+details = select * from eBay.ProductDetails where
+    ProductID in ('{prodid}') and ProductType = 'Reference';
+reviews = select * from eBay.ProductReviews where
+    ProductID in ('{prodid}') and ProductType = 'Reference';
+
+return select d.ProductID[0].Value as id, d.Title as title,
+    d.ReviewCount as reviewCount, r.ReviewDetails.AverageRating as rating
+    from details as d, reviews as r
+    where d.ProductID[0].Value = r.ProductID.Value
+    via route '/myapi' using method get;
+</pre>
+
+
+<p>The implementation details for this script are a bit more involved, but at a high level, here is
+what happens under the hood:</p>
+
+<ul>
+<li>Find the script when the client submits a request to the script through a route <code>/myapi</code>.</li>
+<li>Send a HTTP request to <code>http://open.api.ebay.com/shopping?callname=FindProducts</code> with a keyword
+and extract product IDs from the response.</li>
+<li>Send <code>5</code> HTTP requests to <code>http://open.api.ebay.com/shopping?callname=FindProducts</code> with the
+product IDs found and extract the details.</li>
+<li>Send <code>5</code> HTTP requests to <code>http://open.api.ebay.com/shopping?callname=FindReviewsAndGuides</code> with
+the product IDs found and extract the reviews.</li>
+<li>Once the <code>10</code> requests complete, join details and reviews by matching responses by IDs, and
+extract the selected fields into an object.</li>
+<li>Return an array of objects with each object containing the selected fields.</li>
+</ul>
+
+
+<p>This script covers most of the code paths of ql.io. See <a href="http://ql.io/docs/build-an-app">Build an
+App</a> for a step by step description of this scenario</p>
+
+<h3>Differences Between Scenarios</h3>
+
+<ul>
+<li>Both scenario A and B are mostly IO bound.</li>
+<li>Scenario C is also mostly IO bound, but it makes two HTTP requests in sequence as the outer
+<code>select</code> depends on the results of the <code>inner</code> select. The second request is made after the first
+one completes.</li>
+<li>Scenario D involves making <code>11</code> HTTP requests, parsing and projecting response fields, and joining
+members of responses of the second and third statements. These responses are unsorted, and joining
+them by a matching product ID takes O(n<sup>2)</sup> steps - in this case 25. Yes - this can be improved -
+but <a href="http://calendar.perfplanet.com/2011/measure-twice-cut-once/">let&#8217;s measure twice before cutting
+once</a>.</li>
+</ul>
+
+
+<h2>Test Settings</h2>
+
+<p>All tests are done using <code>ab -k</code> to maintain persistent connections from the client to the server.</p>
+
+<p>The ql.io app is run with <code>12</code> node.js worker processes managed by
+<a href="http://learnboost.github.com/cluster/">cluster</a>.</p>
+
+<h2>First Round Results</h2>
+
+<h3>Throughput</h3>
+
+<p>Here are the throughput results for concurrency ranging from 100 to 500.</p>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js"> {"dataSourceUrl":"//docs.google.com/a/subbu.org/spreadsheet/tq?key=0ApntcBgpHeZldFREOFlGeXVWdzZZc3lNSld1aWZqdVE&transpose=0&headers=1&range=A3%3AE8&gid=0&pub=1","options":{"reverseCategories":false,"curveType":"","titleX":"Concurrency","backgroundColor":"#FFFFFF","pointSize":0,"width":600,"lineWidth":2,"logScale":false,"hAxis":{"maxAlternations":1},"hasLabelsColumn":true,"vAxes":[{"title":"Requests/sec","minValue":null,"viewWindowMode":"pretty","viewWindow":{"min":null,"max":null},"maxValue":null},{"viewWindowMode":"pretty","viewWindow":{}}],"title":"Throughput (12 workers)","height":371,"interpolateNulls":false,"legend":"right","reverseAxis":false},"state":{},"view":"{\"columns\":[0,1,2,3,4]}","chartType":"LineChart","chartName":"Throughput"} </script>
+
+
+<h3>Mean Response Times</h3>
+
+<p>The corresponding chart showing the mean response time for the same range of concurrency is below.</p>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js"> {"dataSourceUrl":"//docs.google.com/a/subbu.org/spreadsheet/tq?key=0ApntcBgpHeZldFREOFlGeXVWdzZZc3lNSld1aWZqdVE&transpose=0&headers=1&range=A27%3AE32&gid=0&pub=1","options":{"reverseCategories":false,"curveType":"","titleX":"Concurrency","pointSize":0,"backgroundColor":"#FFFFFF","lineWidth":2,"logScale":false,"hAxis":{"maxAlternations":1},"hasLabelsColumn":true,"vAxes":[{"title":"Time for 80% requests to complete","minValue":null,"viewWindowMode":"pretty","viewWindow":{"min":null,"max":null},"maxValue":null},{"viewWindowMode":"pretty","viewWindow":{}}],"title":"Mean response time","interpolateNulls":false,"legend":"right","reverseAxis":false,"width":600,"height":371},"state":{},"view":"{\"columns\":[0,1,2,3,4]}","chartType":"LineChart","chartName":"Chart 2"} </script>
+
+
+<h2>Effect of Number of Workers</h2>
+
+<p>In these tests, scenario D fared badly as it includes a mixture of IO and CPU workloads. The CPU
+workload is not predominant but is not insignificant either. Here is a chart of the CPU data
+captured using <code>dstat</code> at a concurrency level of 200 for sceanrio D.</p>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js"> {"dataSourceUrl":"//docs.google.com/a/subbu.org/spreadsheet/tq?key=0ApntcBgpHeZldFREOFlGeXVWdzZZc3lNSld1aWZqdVE&transpose=0&headers=1&range=A7%3AG443&gid=5&pub=1","options":{"vAxes":[{"viewWindowMode":"pretty","viewWindow":{}},{"viewWindowMode":"pretty","viewWindow":{}}],"displayAnnotations":true,"height":371,"width":709,"displayRangeSelector":true,"displayZoomButtons":true,"hAxis":{"maxAlternations":1},"hasLabelsColumn":true,"wmode":"opaque"},"state":{},"view":"{\"columns\":[0,1,2,3,4,5,6]}","chartType":"AnnotatedTimeLine","chartName":"CPU Load for Scenario A with 12 workers"} </script>
+
+
+<p>This confirms that there is a fair bit of CPU bounded work going on. How does the number of
+workers influence such a scenario? I repeated the tests varying the number of worker processes.</p>
+
+<p>The chart below shows the number of requests per second for Scenario D as I changed the number of
+workers from 12 to 96 in increments of 12. All the test runs were done at a concurrency level of
+100.</p>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js"> {"dataSourceUrl":"//docs.google.com/a/subbu.org/spreadsheet/tq?key=0ApntcBgpHeZldFREOFlGeXVWdzZZc3lNSld1aWZqdVE&transpose=0&headers=1&range=A4%3AB12&gid=2&pub=1","options":{"reverseCategories":false,"curveType":"","titleX":"Number of workers","pointSize":0,"backgroundColor":"#FFFFFF","lineWidth":2,"logScale":false,"hasLabelsColumn":true,"hAxis":{"maxAlternations":1},"vAxes":[{"title":"Req/sec","minValue":null,"viewWindowMode":"pretty","viewWindow":{"min":null,"max":null},"maxValue":null},{"viewWindowMode":"pretty","viewWindow":{}}],"title":"","interpolateNulls":false,"legend":"right","reverseAxis":false,"width":600,"height":371},"state":{},"view":"{\"columns\":[0,1]}","chartType":"LineChart","chartName":"Chart 3"} </script>
+
+
+<p>The number of requests per sec increase from 192 to 384 as I increased the number of workers from
+12 to 96. The improvement is less significant after 60 workers.</p>
+
+<p>Here is chart for the mean response time which shows a similar improvement.</p>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js"> {"dataSourceUrl":"//docs.google.com/a/subbu.org/spreadsheet/tq?key=0ApntcBgpHeZldFREOFlGeXVWdzZZc3lNSld1aWZqdVE&transpose=0&headers=1&range=D4%3AE12&gid=2&pub=1","options":{"series":{"0":{"color":"#6aa84f"}},"reverseCategories":false,"curveType":"","titleX":"Number of workers","pointSize":0,"backgroundColor":"#FFFFFF","lineWidth":2,"logScale":false,"hAxis":{"maxAlternations":1},"hasLabelsColumn":true,"vAxes":[{"title":"Mean response time (msec)","minValue":null,"viewWindowMode":"pretty","viewWindow":{"min":null,"max":null},"maxValue":null},{"viewWindowMode":"pretty","viewWindow":{}}],"title":"","interpolateNulls":false,"legend":"none","reverseAxis":false,"width":600,"height":371},"state":{},"view":"{\"columns\":[0,1]}","chartType":"LineChart","chartName":"Chart 4"} </script>
+
+
+<p>The flatness of these charts with increased worker count can easily be explained by looking at the
+CPU again. The chart below shows the CPU data at a cocurrency level of 200 for scenario D with a
+worker count of 96.</p>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js"> {"dataSourceUrl":"//docs.google.com/a/subbu.org/spreadsheet/tq?key=0ApntcBgpHeZldFREOFlGeXVWdzZZc3lNSld1aWZqdVE&transpose=0&headers=1&range=A7%3AG288&gid=6&pub=1","options":{"displayAnnotations":true,"vAxes":[{"viewWindowMode":"pretty","viewWindow":{}},{"viewWindowMode":"pretty","viewWindow":{}}],"wmode":"opaque","hasLabelsColumn":true,"hAxis":{"maxAlternations":1},"width":742,"height":371},"state":{},"view":"{\"columns\":[0,1,2,3,4,5,6]}","chartType":"AnnotatedTimeLine","chartName":"Chart 9"} </script>
+
+
+<p>The chart below shows the effect of increasing the worker count from 12 to 96 across all test
+scenarios.</p>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js"> {"dataSourceUrl":"//docs.google.com/a/subbu.org/spreadsheet/tq?key=0ApntcBgpHeZldFREOFlGeXVWdzZZc3lNSld1aWZqdVE&transpose=0&headers=1&range=A2%3AI7&gid=1&pub=1","options":{"vAxes":[{"title":"Requests/sec","minValue":null,"viewWindowMode":"pretty","viewWindow":{"min":null,"max":null},"maxValue":null},{"viewWindowMode":"pretty","viewWindow":{}}],"reverseCategories":false,"title":"","titleX":"Concurrency","backgroundColor":"#FFFFFF","legend":"right","logScale":false,"reverseAxis":false,"hasLabelsColumn":true,"hAxis":{"maxAlternations":1},"isStacked":false,"width":1074,"height":340},"state":{},"view":"{\"columns\":[0,1,2,3,4,5,6,7,8]}","chartType":"ColumnChart","chartName":"Chart 5"} </script>
+
+
+
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js"> {"dataSourceUrl":"//docs.google.com/a/subbu.org/spreadsheet/tq?key=0ApntcBgpHeZldFREOFlGeXVWdzZZc3lNSld1aWZqdVE&transpose=0&headers=1&range=A34%3AI39&gid=1&pub=1","options":{"vAxes":[{"title":"Mean response time (msec)","minValue":null,"viewWindowMode":"pretty","viewWindow":{"min":null,"max":null},"maxValue":null},{"viewWindowMode":"pretty","viewWindow":{}}],"reverseCategories":false,"title":"","titleX":"Concurrency","backgroundColor":"#FFFFFF","legend":"right","logScale":false,"reverseAxis":false,"hAxis":{"maxAlternations":1},"hasLabelsColumn":false,"isStacked":false,"width":972,"height":402},"state":{},"view":"{\"columns\":[0,1,2,3,4,5,6,7,8]}","chartType":"ColumnChart","chartName":"Chart 6"} </script>
+
+
+<h2>What About Memory</h2>
+
+<p>Below is a chart of the memory usage with 96 workers for scenario D at a concurrency level of 200.</p>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js"> {"dataSourceUrl":"//docs.google.com/a/subbu.org/spreadsheet/tq?key=0ApntcBgpHeZldFREOFlGeXVWdzZZc3lNSld1aWZqdVE&transpose=0&headers=1&range=A299%3AE581&gid=6&pub=1","options":{"displayAnnotations":true,"vAxes":[{"viewWindowMode":"pretty","viewWindow":{}},{"viewWindowMode":"pretty","viewWindow":{}}],"wmode":"opaque","hasLabelsColumn":true,"hAxis":{"maxAlternations":1},"width":708,"height":371},"state":{},"view":"{\"columns\":[0,1,2,3,4]}","chartType":"AnnotatedTimeLine","chartName":"Chart 12"} </script>
+
+
+<p>The lines remained nearly flat for the duration of the test.</p>
+
+<h2>Summary</h2>
+
+<p>The goal of this exercise is to set a baseline for future work. The scenarios I used show a range of
+scripts that cover most of the current capabilities of ql.io.</p>
+
+<p>Here are few key take-aways:</p>
+
+<ul>
+<li>ql.io is designed for IO bound workloads. However, data aggregation and orchestration often
+involves some CPU bound work such as projections and joins. This is unavoidable. I suspect that
+the same is the case with many typical uses of node.js.</li>
+<li>On commodity hardware with commodity network layer, my tests show that ql.io can do 400-2400
+requests/sec depending on the nature of the work involved. Your mileage may vary.</li>
+<li>Use of as many workers as there are CPU threads available is a good starting point, but tuning
+the number based on the characteristics of the app may yield better results.</li>
+</ul>
+
+
+<p>We&#8217;re currently working on upgrading ql.io to node.js 0.6.x. See the <a href="https://github.com/ql-io/ql.io/tree/0.4">0.4 branch on
+github</a>. Watchout for a repeat of these tests on node.js
+0.6.x.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ql.io on Joyent's no.de]]></title>
+    <link href="http://ql-io.github.com/2011/12/17/no.de.html"/>
+    <updated>2011-12-17T00:00:00-08:00</updated>
+    <id>http://ql-io.github.com/2011/12/17/no.de</id>
+    <content type="html"><![CDATA[<p>If you&#8217;re interested in setting a ql.io app instance on a Joyent&#8217;s <a href="https://no.de/">no.de</a>, here is
+how.</p>
+
+<ul>
+<li>Clone the template app</li>
+</ul>
+
+
+<pre class="brush: bash toolbar: false;">
+git clone git@github.com:ql-io/ql-io.no.de.git
+</pre>
+
+
+<p>This template includes a server.js, some sample ql.io scripts.</p>
+
+<ul>
+<li><p>Create a SmartMachine instance on no.de.</p></li>
+<li><p>Push the app to no.de</p></li>
+</ul>
+
+
+<pre class="brush: bash toolbar: false;">
+# Assuming your smart machine name is "foo"
+cd ql-io.no.de
+git remote add foo.no.de foo.no.de:repo
+git push foo.no.de master
+</pre>
+
+
+<p>This will push the app to your SmartMachine, and bring it up.</p>
+
+<ul>
+<li>Try a sample route.</li>
+</ul>
+
+
+<pre class="brush: bash toolbar: false;">
+curl http://foo.no.de/myapi
+</pre>
+
+
+<p>Use <code>http://foo.no.de/console</code> to view the console.</p>
+
+<p>See <a href="http://ql.no.de/myapi">ql.no.de/myapi</a> to see this example in action.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Milestone 6]]></title>
+    <link href="http://ql-io.github.com/2011/12/16/milestone.html"/>
+    <updated>2011-12-16T00:00:00-08:00</updated>
+    <id>http://ql-io.github.com/2011/12/16/milestone</id>
+    <content type="html"><![CDATA[<ul>
+<li><p>Clients can occasionally get socket hangup errors when origin servers close connections without
+sending a <code>Connection: close</code> header. See
+<a href="https://github.com/joyent/node/issues/1135">https://github.com/joyent/node/issues/1135</a> for some
+background. To avoid such errors, http.request.js now automatically retries the request once
+provided the statement that caused the HTTP request is a <code>select</code>.</p></li>
+<li><p>The engine can now consume CSV response in addition to XML and JSON.</p></li>
+<li><p>Fixed request body processing for routes (see <a href="https://github.com/ql-io/ql.io/pull/161">issue 161</a>).</p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Milestone 5]]></title>
+    <link href="http://ql-io.github.com/2011/12/08/milestone.html"/>
+    <updated>2011-12-08T00:00:00-08:00</updated>
+    <id>http://ql-io.github.com/2011/12/08/milestone</id>
+    <content type="html"><![CDATA[<ul>
+<li><p><a href="https://github.com/ql-io/ql.io/issues/121">OAuth example</a> - OAuth2 is trivial as ql.io proxies
+headers from clients to servers. OAuth1 requires glue code to compute the Authorization header.
+See <a href="http://ql.io/docs/oauth">http://ql.io/docs/oauth</a> for an example.</p></li>
+<li><p>Use npm installed modules for ql.io-site (<a href="https://github.com/ql-io/ql.io/issues/116">see issue 116</a>).</p></li>
+<li><p>Handle empty response bodies gracefully (<a href="https://github.com/ql-io/ql.io/issues/98">see issue 98</a>).</p></li>
+<li><p>Recover from partial failures in case of scatter-gather calls
+(<a href="https://github.com/ql-io/ql.io/issues/90">see issue 90</a>) - some statements can result in multiple
+HTTP requests. When this happens, the engine used to fail the entire statement if any of those
+requests fail. The engine now looks for success responses and aggregates them.</p></li>
+<li><p>Update CodeMirror to support line-wrapping (<a href="https://github.com/ql-io/ql.io/issues/11">See issue
+11</a>) - no need to split lines manually anymore.</p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ql.io Launch]]></title>
+    <link href="http://ql-io.github.com/2011/11/29/launch.html"/>
+    <updated>2011-11-29T00:00:00-08:00</updated>
+    <id>http://ql-io.github.com/2011/11/29/launch</id>
+    <content type="html"><![CDATA[<p>See <a href="http://www.ebaytechblog.com/2011/11/30/announcing-ql-io/">Announcing ql.io</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>
