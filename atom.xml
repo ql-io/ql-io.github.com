@@ -4,7 +4,7 @@
   <title><![CDATA[ql.io blog]]></title>
   <link href="http://ql-io.github.com/atom.xml" rel="self"/>
   <link href="http://ql-io.github.com/"/>
-  <updated>2012-03-12T18:23:05-07:00</updated>
+  <updated>2012-03-13T06:34:04-07:00</updated>
   <id>http://ql-io.github.com/</id>
   <author>
     <name><![CDATA[ql.io]]></name>
@@ -14,10 +14,10 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Build Your Own APIs]]></title>
-    <link href="http://ql-io.github.com/2012/03/12/build-your-own-apis.html"/>
+    <title type="html"><![CDATA[En Route]]></title>
+    <link href="http://ql-io.github.com/2012/03/12/en-route.html"/>
     <updated>2012-03-12T00:00:00-07:00</updated>
-    <id>http://ql-io.github.com/2012/03/12/build-your-own-apis</id>
+    <id>http://ql-io.github.com/2012/03/12/en-route</id>
     <content type="html"><![CDATA[<p>A route in ql.io is a new consumer-optimized HTTP interface. Routes superimpose a simple and familiar HTTP interface on ql.io scripts without needing to specify an elaborate script in the request. In other words, routes make ql.io a platform to &#8220;build your own APIs&#8221;.</p>
 
 <p>Having built this capability, in this post I want to highlight some potential ways to take advantage of routes.</p>
@@ -41,7 +41,7 @@
 
 <p>Here is an example.</p>
 
-<p><img src="http://ql-io.github.com/images/2012-03-12-byoa-1.png" alt="API browsing" /></p>
+<p><a href="http://ql.io/api"><img src="http://ql-io.github.com/images/2012-03-12-byoa-1.png" alt="API browsing" /></a></p>
 
 <p>Go to <a href="http://ql.io/apis">http://ql.io/apis</a> to try it out. Though this capability is automatic, it needs a couple of actions as you build tables and routes.</p>
 
