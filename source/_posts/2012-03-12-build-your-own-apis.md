@@ -1,7 +1,14 @@
+---
+title: Build Your Own APIs
+layout: post
+author: cpenkar
+---
 
 A route in ql.io is a new consumer-optimized HTTP interface. Routes superimpose a simple and familiar HTTP interface on ql.io scripts without needing to specify an elaborate script in the request. In other words, routes make ql.io a platform to "build your own APIs". 
   
 Having built this capability, in this post I want to highlight some potential ways to take advantage of routes.
+
+<!-- more -->
 
 ## Discovery
 
@@ -16,7 +23,7 @@ Every ql.io now includes a special URI `http://{host}:{port}/api` that lets you 
 
 Here is an example.
 
-![API browsing](../images/2012-03-12-byoa-1.png)
+![API browsing](/images/2012-03-12-byoa-1.png)
 
 Go to [http://ql.io/apis](http://ql.io/apis) to try it out. Though this capability is automatic, it needs a couple of actions as you build tables and routes.
 
@@ -47,17 +54,17 @@ Since `keywords` is hardcoded in this script, it is only capable of finding "ql.
       "tweets": "{tweets}"
     } via route '/search?q={keyword}' using method get;
 
-With this route, you can use `http://{host}:{port}/search?q={your keyword here}` to run the script. Try this route at [http://ql.io/search?q=
+With this route, you can use `http://{host}:{port}/search?q={your keyword here}` to run the script. Try this route at [http://ql.io/search?q=ql.io](http://ql.io/search?q=ql.io).
 
 ## Similar but Different
 
 There are other ways to parameterize routes. Let's say, you would like to provide the following resources to client apps.
 
-1. `http://{host}:{port}/item/location?itemid={itemid}` with method `GET`: Retrieve geo-location for a given an item id.
+1. `http://{host}:{port}/item/location?itemid={itemid}` with method `GET`: Retrieve geo-location for a given item id.
 2. `http://{host}:{port}/item/location?keyword={keyword}` with method `GET`: Given a keyword, find matching items, and then find and return their geo-locations.
 3. `http://{host}:{port}/item/location?itemid={itemid}&keyword={keyword}` with method `GET`: Given a keyword and item ID, find geolocatons of all items matching the keyword, and also for the item ID. Such a response may be useful when you want to show locations of a given items, but also other items that match the keyword. 
 
-Notice all the routes given above have the same HTTP method `GET` and the same path `/item/location` but differ in query parameters. But as the aggregation logic may be different for each of these scripts, you can define three different scripts for the same path.
+Notice all the routes above have the same HTTP method `GET` and the same path `/item/location` but differ in query parameters. But as the aggregation logic may be different for each of these scripts, you can define three different scripts for the same path.
 
 Here is a route for `/item/location?itemid={itemid}`
  
