@@ -4,7 +4,7 @@
   <title><![CDATA[ql.io blog]]></title>
   <link href="http://ql-io.github.com/atom.xml" rel="self"/>
   <link href="http://ql-io.github.com/"/>
-  <updated>2012-03-13T13:34:32-07:00</updated>
+  <updated>2012-03-13T18:25:06-07:00</updated>
   <id>http://ql-io.github.com/</id>
   <author>
     <name><![CDATA[ql.io]]></name>
@@ -29,7 +29,7 @@
 
 <p>Let&#8217;s imagine you built some new APIs using ql.io. How can your users find more about those APIs? Here is how.</p>
 
-<p>Every ql.io now includes a special URI <code>http://{host}:{port}/api</code> that lets you browse through the following:</p>
+<p>Every ql.io instance3 now includes a special URI <code>http://{host}:{port}/api</code> that lets you browse through the following:</p>
 
 <ul>
 <li>List of routes</li>
