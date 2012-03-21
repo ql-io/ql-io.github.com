@@ -4,7 +4,7 @@
   <title><![CDATA[ql.io blog]]></title>
   <link href="http://ql-io.github.com/atom.xml" rel="self"/>
   <link href="http://ql-io.github.com/"/>
-  <updated>2012-03-21T07:42:20-07:00</updated>
+  <updated>2012-03-21T07:42:43-07:00</updated>
   <id>http://ql-io.github.com/</id>
   <author>
     <name><![CDATA[ql.io]]></name>
@@ -27,7 +27,7 @@ a cluster of node processes using node&#8217;s native cluster.</p>
 <h2>Setup CloudFoundry</h2>
 
 <p>Setup a working CloudFoundry environment with matching architecture for development and deployment.
- ql.io relies non <code>node-expat</code> and hence npm modules installed on a the development machine must be
+ ql.io relies non <code>node-expat</code> and hence npm modules installed on the development machine must be
  portable to your CloudFoundry VM. This rules out using a Mac or Windows for development and
  <a href="https://my.cloudfoundry.com/micro">Micro Cloud Foundry</a> with Ubuntu for testing the deployment.</p>
 
