@@ -4,7 +4,7 @@
   <title><![CDATA[ql.io blog]]></title>
   <link href="http://ql-io.github.com/atom.xml" rel="self"/>
   <link href="http://ql-io.github.com/"/>
-  <updated>2012-03-13T18:25:06-07:00</updated>
+  <updated>2012-03-21T07:28:52-07:00</updated>
   <id>http://ql-io.github.com/</id>
   <author>
     <name><![CDATA[ql.io]]></name>
@@ -12,6 +12,96 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ql.io on CloudFoundry]]></title>
+    <link href="http://ql-io.github.com/2012/03/21/ql.io-on-cloudfoundry.html"/>
+    <updated>2012-03-21T00:00:00-07:00</updated>
+    <id>http://ql-io.github.com/2012/03/21/ql.io-on-cloudfoundry</id>
+    <content type="html"><![CDATA[<p>Here are the steps to deploy ql.io on CloudFoundry with node 0.6.x. This setup automatically spawns
+a cluster using node&#8217;s native cluster.</p>
+
+<!-- more -->
+
+
+<h2>Setup CloudFoundry</h2>
+
+<p>Setup a working CloudFoundry environment with matching architecture for development and deployment.
+ ql.io relies non <code>node-expat</code> and hence npm modules installed on a the development machine must be
+ portable to your CloudFoundry VM. This rules out using a Mac or Windows for development and
+ <a href="https://my.cloudfoundry.com/micro">Micro Cloud Foundry</a> with Ubuntu for testing the deployment.</p>
+
+<p>If you want to try on a Mac with Micro Cloud Foundry from Mac, use the Micro Cloud Foundry VM as the
+development machine. Here are the steps to use.</p>
+
+<ul>
+<li><code>ssh vcap@&lt;your Micro Cloud Foundry IP&gt;</code></li>
+<li>Download and build node (0.6.x)</li>
+<li><code>sudo apt-get install expat libexpat-dev</code></li>
+</ul>
+
+
+<h2>Setup an App</h2>
+
+<pre><code>git clone git@github.com:ql-io/ql.io-cloudfoundry.git cfapp
+</code></pre>
+
+<p><code>vmc</code> failed for me when the directory name of the app had numbers and dots, and hence use a name
+without such characters for the app.</p>
+
+<pre><code>cd cfapp
+npm install
+</code></pre>
+
+<p>Add tables and routes as usual.</p>
+
+<h2>Push the App</h2>
+
+<pre><code>~/cfapp/vmc push --runtime=node06
+Would you like to deploy from the current directory? [Yn]: y
+Application Name: cfapp
+Application Deployed URL [cfapp.xxx.cloudfoundry.me]: &lt;use your deployment URL&gt;
+Detected a Node.js Application, is this correct? [Yn]:
+Memory Reservation (64M, 128M, 256M, 512M, 1G) [64M]: 512M
+Creating Application: OK
+Would you like to bind any services to 'cfapp'? [yN]: n
+Uploading Application:
+Checking for available resources: OK
+Processing resources: OK
+Packing application: OK
+Uploading (160K): OK
+Push Status: OK
+Staging Application: OK
+Starting Application: OK
+</code></pre>
+
+<p>Note that, using 512M or more is important - the default 64M is not sufficient for running a cluster
+of node instances with all ql.io modules, and <code>vmc</code> fails silently with the default.</p>
+
+<h2>Known Issues</h2>
+
+<p>Here is a summary of issues that I ran into while trying this out.</p>
+
+<ol>
+<li>Don&#8217;t forget to add <code>--runtime=node06</code> to <code>vmc push</code>. By default, Cloud Foundry uses node 0.4.x.</li>
+<li>Reserve appropriate memory for the app. <code>app.js</code> spans <code>n+1</code> node processes where <code>n</code> equals the
+number of the CPU threads on the VM.</li>
+<li>Don&#8217;t use characters like <code>.</code> and <code>-</code> in the name of the app.</li>
+<li>Cloud Foundry uses an L7 router and hence breaks ql.io&#8217;s console as it uses WebSocket API. If
+you would like to use the console on Cloud Foundry, use Safari.</li>
+<li>The <code>app.js</code> bundled with <a href="https://github.com/ql-io/ql.io-cloudfoundry">ql.io-cloudfoundry</a> leaves
+the paths <code>/console</code>, and <code>/q</code> open for traffic. I don&#8217;t recommend this. In production, consider
+disabling these two and use routes in stead from client apps by changing the <code>options</code> in
+<code>app.js</code> to the following.</li>
+</ol>
+
+
+<script src="https://gist.github.com/2147268.js"> </script>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[En Route]]></title>

@@ -9,7 +9,8 @@
   <meta name="author" content="ql.io">
 
   
-  <meta name="description" content="A route in ql.io is a new consumer-optimized HTTP interface. Routes superimpose a simple and familiar HTTP interface on ql.io scripts without needing &hellip;">
+  <meta name="description" content="Here are the steps to deploy ql.io on CloudFoundry with node 0.6.x. This setup automatically spawns
+a cluster using node&#8217;s native cluster. ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +80,58 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/03/21/ql.io-on-cloudfoundry.html">ql.io on CloudFoundry</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-21T00:00:00-07:00" pubdate data-updated="true">Mar 21<span>st</span>, 2012</time>
+        
+         | <a href="/2012/03/21/ql.io-on-cloudfoundry.html#disqus_thread">Comments</a>
+        
+      </p>
+      <p>
+        
+  
+
+
+<span class="byline author vcard">Posted by <a href="http://github.com/s3u">Subbu Allamaraju</a></span>
+
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Here are the steps to deploy ql.io on CloudFoundry with node 0.6.x. This setup automatically spawns
+a cluster using node&#8217;s native cluster.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/2012/03/21/ql.io-on-cloudfoundry.html">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -624,65 +677,6 @@ provided the statement that caused the HTTP request is a <code>select</code>.</p
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/12/08/milestone.html">Milestone 5</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-08T00:00:00-08:00" pubdate data-updated="true">Dec 8<span>th</span>, 2011</time>
-        
-         | <a href="/2011/12/08/milestone.html#disqus_thread">Comments</a>
-        
-      </p>
-      <p>
-        
-  
-
-
-<span class="byline author vcard">Posted by <a href="http://github.com/s3u">Subbu Allamaraju</a></span>
-
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ul>
-<li><p><a href="https://github.com/ql-io/ql.io/issues/121">OAuth example</a> - OAuth2 is trivial as ql.io proxies
-headers from clients to servers. OAuth1 requires glue code to compute the Authorization header.
-See <a href="http://ql.io/docs/oauth">http://ql.io/docs/oauth</a> for an example.</p></li>
-<li><p>Use npm installed modules for ql.io-site (<a href="https://github.com/ql-io/ql.io/issues/116">see issue 116</a>).</p></li>
-<li><p>Handle empty response bodies gracefully (<a href="https://github.com/ql-io/ql.io/issues/98">see issue 98</a>).</p></li>
-<li><p>Recover from partial failures in case of scatter-gather calls
-(<a href="https://github.com/ql-io/ql.io/issues/90">see issue 90</a>) - some statements can result in multiple
-HTTP requests. When this happens, the engine used to fail the entire statement if any of those
-requests fail. The engine now looks for success responses and aggregates them.</p></li>
-<li><p>Update CodeMirror to support line-wrapping (<a href="https://github.com/ql-io/ql.io/issues/11">See issue
-11</a>) - no need to split lines manually anymore.</p></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -696,6 +690,10 @@ requests fail. The engine now looks for success responses and aggregates them.</
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2012/03/21/ql.io-on-cloudfoundry.html">ql.io on CloudFoundry</a>
+      </li>
     
       <li class="post">
         <a href="/2012/03/12/en-route.html">En Route</a>
@@ -731,10 +729,6 @@ requests fail. The engine now looks for success responses and aggregates them.</
     
       <li class="post">
         <a href="/2011/12/16/milestone.html">Milestone 6</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/12/08/milestone.html">Milestone 5</a>
       </li>
     
   </ul>

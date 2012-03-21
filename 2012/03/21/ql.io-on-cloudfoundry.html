@@ -5,15 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Blog Archive - ql.io blog</title>
+  <title>ql.io on CloudFoundry - ql.io blog</title>
   <meta name="author" content="ql.io">
 
   
-  <meta name="description" content="Blog Archive 2012 ql.io on CloudFoundry
-Mar 21 2012 En Route
-Mar 12 2012 Making Peace with HTTP APIs
-Feb 22 2012 ql.io 0.4.0
-Feb 13 2012 Slides from &hellip;">
+  <meta name="description" content="Here are the steps to deploy ql.io on CloudFoundry with node 0.6.x. This setup automatically spawns
+a cluster using node&#8217;s native cluster. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -22,7 +19,7 @@ Feb 13 2012 Slides from &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://ql-io.github.com/blog/archives/index.html">
+  <link rel="canonical" href="http://ql-io.github.com/2012/03/21/ql.io-on-cloudfoundry.html">
   <link href="/favicon.ico" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -82,145 +79,153 @@ Feb 13 2012 Slides from &hellip;">
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Blog Archive</h1>
+    
+      <h1 class="entry-title">ql.io on CloudFoundry</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-21T00:00:00-07:00" pubdate data-updated="true">Mar 21<span>st</span>, 2012</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+      <p>
+        
+  
+
+
+<span class="byline author vcard">Posted by <a href="http://github.com/s3u">Subbu Allamaraju</a></span>
+
+      </p>
     
   </header>
-  
-  <div id="blog-archives">
 
 
+<div class="entry-content"><p>Here are the steps to deploy ql.io on CloudFoundry with node 0.6.x. This setup automatically spawns
+a cluster using node&#8217;s native cluster.</p>
 
-  
-  <h2>2012</h2>
-
-<article>
-  
-<h1><a href="/2012/03/21/ql.io-on-cloudfoundry.html">ql.io on CloudFoundry</a></h1>
-<time datetime="2012-03-21T00:00:00-07:00" pubdate><span class='month'>Mar</span> <span class='day'>21</span> <span class='year'>2012</span></time>
+<!-- more -->
 
 
-</article>
+<h2>Setup CloudFoundry</h2>
+
+<p>Setup a working CloudFoundry environment with matching architecture for development and deployment.
+ ql.io relies non <code>node-expat</code> and hence npm modules installed on a the development machine must be
+ portable to your CloudFoundry VM. This rules out using a Mac or Windows for development and
+ <a href="https://my.cloudfoundry.com/micro">Micro Cloud Foundry</a> with Ubuntu for testing the deployment.</p>
+
+<p>If you want to try on a Mac with Micro Cloud Foundry from Mac, use the Micro Cloud Foundry VM as the
+development machine. Here are the steps to use.</p>
+
+<ul>
+<li><code>ssh vcap@&lt;your Micro Cloud Foundry IP&gt;</code></li>
+<li>Download and build node (0.6.x)</li>
+<li><code>sudo apt-get install expat libexpat-dev</code></li>
+</ul>
 
 
+<h2>Setup an App</h2>
 
-<article>
-  
-<h1><a href="/2012/03/12/en-route.html">En Route</a></h1>
-<time datetime="2012-03-12T00:00:00-07:00" pubdate><span class='month'>Mar</span> <span class='day'>12</span> <span class='year'>2012</span></time>
+<pre><code>git clone git@github.com:ql-io/ql.io-cloudfoundry.git cfapp
+</code></pre>
 
+<p><code>vmc</code> failed for me when the directory name of the app had numbers and dots, and hence use a name
+without such characters for the app.</p>
 
-</article>
+<pre><code>cd cfapp
+npm install
+</code></pre>
 
+<p>Add tables and routes as usual.</p>
 
+<h2>Push the App</h2>
 
-<article>
-  
-<h1><a href="/2012/02/22/making-peace.html">Making Peace with HTTP APIs</a></h1>
-<time datetime="2012-02-22T00:00:00-08:00" pubdate><span class='month'>Feb</span> <span class='day'>22</span> <span class='year'>2012</span></time>
+<pre><code>~/cfapp/vmc push --runtime=node06
+Would you like to deploy from the current directory? [Yn]: y
+Application Name: cfapp
+Application Deployed URL [cfapp.xxx.cloudfoundry.me]: &lt;use your deployment URL&gt;
+Detected a Node.js Application, is this correct? [Yn]:
+Memory Reservation (64M, 128M, 256M, 512M, 1G) [64M]: 512M
+Creating Application: OK
+Would you like to bind any services to 'cfapp'? [yN]: n
+Uploading Application:
+Checking for available resources: OK
+Processing resources: OK
+Packing application: OK
+Uploading (160K): OK
+Push Status: OK
+Staging Application: OK
+Starting Application: OK
+</code></pre>
 
+<p>Note that, using 512M or more is important - the default 64M is not sufficient for running a cluster
+of node instances with all ql.io modules, and <code>vmc</code> fails silently with the default.</p>
 
-</article>
+<h2>Known Issues</h2>
 
+<p>Here is a summary of issues that I ran into while trying this out.</p>
 
-
-<article>
-  
-<h1><a href="/2012/02/13/v0.4.html">ql.io 0.4.0</a></h1>
-<time datetime="2012-02-13T00:00:00-08:00" pubdate><span class='month'>Feb</span> <span class='day'>13</span> <span class='year'>2012</span></time>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/2012/02/12/nodepdx-slides.html">Slides from NodePDX</a></h1>
-<time datetime="2012-02-12T00:00:00-08:00" pubdate><span class='month'>Feb</span> <span class='day'>12</span> <span class='year'>2012</span></time>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/2012/01/24/node-summit-slides.html">Slides from Node Summit</a></h1>
-<time datetime="2012-01-24T00:00:00-08:00" pubdate><span class='month'>Jan</span> <span class='day'>24</span> <span class='year'>2012</span></time>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/2012/01/17/v0.4-beta.html">ql.io 0.4.0-beta</a></h1>
-<time datetime="2012-01-17T00:00:00-08:00" pubdate><span class='month'>Jan</span> <span class='day'>17</span> <span class='year'>2012</span></time>
+<ol>
+<li>Don&#8217;t forget to add <code>--runtime=node06</code> to <code>vmc push</code>. By default, Cloud Foundry uses node 0.4.x.</li>
+<li>Reserve appropriate memory for the app. <code>app.js</code> spans <code>n+1</code> node processes where <code>n</code> equals the
+number of the CPU threads on the VM.</li>
+<li>Don&#8217;t use characters like <code>.</code> and <code>-</code> in the name of the app.</li>
+<li>Cloud Foundry uses an L7 router and hence breaks ql.io&#8217;s console as it uses WebSocket API. If
+you would like to use the console on Cloud Foundry, use Safari.</li>
+<li>The <code>app.js</code> bundled with <a href="https://github.com/ql-io/ql.io-cloudfoundry">ql.io-cloudfoundry</a> leaves
+the paths <code>/console</code>, and <code>/q</code> open for traffic. I don&#8217;t recommend this. In production, consider
+disabling these two and use routes in stead from client apps by changing the <code>options</code> in
+<code>app.js</code> to the following.</li>
+</ol>
 
 
-</article>
+<script src="https://gist.github.com/2147268.js"> </script>
 
 
-
-<article>
-  
-<h1><a href="/2012/01/09/benchmarks.html">ql.io Baseline Benchmarks</a></h1>
-<time datetime="2012-01-09T00:00:00-08:00" pubdate><span class='month'>Jan</span> <span class='day'>09</span> <span class='year'>2012</span></time>
-
-
-</article>
-
-
-
-  
-  <h2>2011</h2>
-
-<article>
-  
-<h1><a href="/2011/12/17/no.de.html">ql.io on Joyent&#8217;s no.de</a></h1>
-<time datetime="2011-12-17T00:00:00-08:00" pubdate><span class='month'>Dec</span> <span class='day'>17</span> <span class='year'>2011</span></time>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/2011/12/16/milestone.html">Milestone 6</a></h1>
-<time datetime="2011-12-16T00:00:00-08:00" pubdate><span class='month'>Dec</span> <span class='day'>16</span> <span class='year'>2011</span></time>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/2011/12/08/milestone.html">Milestone 5</a></h1>
-<time datetime="2011-12-08T00:00:00-08:00" pubdate><span class='month'>Dec</span> <span class='day'>08</span> <span class='year'>2011</span></time>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/2011/11/29/launch.html">ql.io Launch</a></h1>
-<time datetime="2011-11-29T00:00:00-08:00" pubdate><span class='month'>Nov</span> <span class='day'>29</span> <span class='year'>2011</span></time>
-
-
-</article>
 
 </div>
 
+
+  <footer>
+    
+      <div class="sharing">
   
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ql-io.github.com/2012/03/21/ql.io-on-cloudfoundry.html" data-via="" data-counturl="http://ql-io.github.com/2012/03/21/ql.io-on-cloudfoundry.html" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2012/03/12/en-route.html" title="Previous Post: En Route">&laquo; En Route</a>
+      
+      
+    </p>
+  </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -296,7 +301,10 @@ Feb 13 2012 Slides from &hellip;">
       var disqus_shortname = 'qlioblog';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://ql-io.github.com/2012/03/21/ql.io-on-cloudfoundry.html';
+        var disqus_url = 'http://ql-io.github.com/2012/03/21/ql.io-on-cloudfoundry.html';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
