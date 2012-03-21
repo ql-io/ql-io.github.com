@@ -4,7 +4,7 @@
   <title><![CDATA[ql.io blog]]></title>
   <link href="http://ql-io.github.com/atom.xml" rel="self"/>
   <link href="http://ql-io.github.com/"/>
-  <updated>2012-03-21T07:28:52-07:00</updated>
+  <updated>2012-03-21T07:42:20-07:00</updated>
   <id>http://ql-io.github.com/</id>
   <author>
     <name><![CDATA[ql.io]]></name>
@@ -19,7 +19,7 @@
     <updated>2012-03-21T00:00:00-07:00</updated>
     <id>http://ql-io.github.com/2012/03/21/ql.io-on-cloudfoundry</id>
     <content type="html"><![CDATA[<p>Here are the steps to deploy ql.io on CloudFoundry with node 0.6.x. This setup automatically spawns
-a cluster using node&#8217;s native cluster.</p>
+a cluster of node processes using node&#8217;s native cluster.</p>
 
 <!-- more -->
 
