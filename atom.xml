@@ -4,7 +4,7 @@
   <title><![CDATA[ql.io blog]]></title>
   <link href="http://ql-io.github.com/atom.xml" rel="self"/>
   <link href="http://ql-io.github.com/"/>
-  <updated>2012-03-21T10:15:26-07:00</updated>
+  <updated>2012-03-24T16:28:39-07:00</updated>
   <id>http://ql-io.github.com/</id>
   <author>
     <name><![CDATA[ql.io]]></name>
@@ -14,11 +14,11 @@
 
   
   <entry>
-    <title type="html"><![CDATA[ql.io on CloudFoundry]]></title>
+    <title type="html"><![CDATA[ql.io on Cloud Foundry]]></title>
     <link href="http://ql-io.github.com/2012/03/21/ql.io-on-cloudfoundry.html"/>
     <updated>2012-03-21T00:00:00-07:00</updated>
     <id>http://ql-io.github.com/2012/03/21/ql.io-on-cloudfoundry</id>
-    <content type="html"><![CDATA[<p>Here are the steps to deploy ql.io on CloudFoundry with node 0.6.x. This setup automatically spawns
+    <content type="html"><![CDATA[<p>Here are the steps to deploy ql.io on Cloud Foundry with node 0.6.x. This setup automatically spawns
 a cluster of node processes using node&#8217;s native cluster. A sample app to demonstrate these steps is
 on <a href="http://ql-io.github.com/2012/03/21/ql.io-on-cloudfoundry.html">github</a> - this includes an
 <a href="https://github.com/ql-io/ql.io-cloudfoundry/blob/master/app.js">app.js</a> and a
@@ -28,11 +28,11 @@ dependencies.</p>
 <!-- more -->
 
 
-<h2>Setup CloudFoundry</h2>
+<h2>Setup Cloud Foundry</h2>
 
-<p>Setup a working CloudFoundry environment with matching architecture for development and deployment.
+<p>Setup a working Cloud Foundry environment with matching architecture for development and deployment.
  ql.io relies non <code>node-expat</code> and hence npm modules installed on the development machine must be
- portable to your CloudFoundry VM. This rules out using a Mac or Windows for development and
+ portable to your Cloud Foundry VM. This rules out using a Mac or Windows for development and
  <a href="https://my.cloudfoundry.com/micro">Micro Cloud Foundry</a> with Ubuntu for testing the deployment.</p>
 
 <p>If you want to try on a Mac with Micro Cloud Foundry from Mac, use the Micro Cloud Foundry VM as the
@@ -40,8 +40,21 @@ development machine. Here are the steps to use.</p>
 
 <ul>
 <li><code>ssh vcap@&lt;your Micro Cloud Foundry IP&gt;</code></li>
+<li>Install <a href="http://start.cloudfoundry.com/tools/vmc/installing-vmc.html">vmc</a>.</li>
 <li>Download and build node (0.6.x)</li>
 <li><code>sudo apt-get install expat libexpat-dev</code></li>
+</ul>
+
+
+<h2>Upgrade nginx Cloud Foundry</h2>
+
+<p>Upgrae nginx on on the Cloud Foundry target machine. This step is required to let nginx correctly
+serve chunked encoded responses without <code>Content-Length</code> headers.</p>
+
+<ul>
+<li><code>ssh vcap@&lt;your Micro Cloud Foundry IP&gt;</code></li>
+<li>cd /tmp</li>
+<li>curl https://raw.github.com/gist/2187930/e081d925a881e51ef44f19bc5649b2918a1e86d4/mcf_nginx_11.sh | bash</li>
 </ul>
 
 
