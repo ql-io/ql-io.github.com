@@ -4,7 +4,7 @@
   <title><![CDATA[ql.io blog]]></title>
   <link href="http://ql-io.github.com/atom.xml" rel="self"/>
   <link href="http://ql-io.github.com/"/>
-  <updated>2012-03-24T16:29:47-07:00</updated>
+  <updated>2012-03-24T16:34:07-07:00</updated>
   <id>http://ql-io.github.com/</id>
   <author>
     <name><![CDATA[ql.io]]></name>
@@ -46,7 +46,7 @@ development machine. Here are the steps to use.</p>
 </ul>
 
 
-<h2>Upgrade nginx Cloud Foundry</h2>
+<h2>Upgrade nginx</h2>
 
 <p>Upgrae nginx on on the Cloud Foundry target machine. This step is required to let nginx correctly
 serve chunked encoded responses without <code>Content-Length</code> headers.</p>
