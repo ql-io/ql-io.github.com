@@ -4,7 +4,7 @@
   <title><![CDATA[ql.io blog]]></title>
   <link href="http://ql-io.github.com/atom.xml" rel="self"/>
   <link href="http://ql-io.github.com/"/>
-  <updated>2012-03-24T17:00:47-07:00</updated>
+  <updated>2012-03-24T17:04:11-07:00</updated>
   <id>http://ql-io.github.com/</id>
   <author>
     <name><![CDATA[ql.io]]></name>
@@ -54,7 +54,7 @@ serve chunked encoded responses without <code>Content-Length</code> headers.</p>
 <ul>
 <li><code>ssh vcap@&lt;your Micro Cloud Foundry IP&gt;</code></li>
 <li><code>cd /tmp</code></li>
-<li>su -</li>
+<li><code>su -</code></li>
 <li><code>curl https://raw.github.com/gist/2187930/e081d925a881e51ef44f19bc5649b2918a1e86d4/mcf_nginx_11.sh | bash</code></li>
 </ul>
 
