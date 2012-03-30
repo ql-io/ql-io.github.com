@@ -9,8 +9,9 @@
   <meta name="author" content="ql.io">
 
   
-  <meta name="description" content="OAuth example - OAuth2 is trivial as ql.io proxies
-headers from clients to servers. OAuth1 requires glue code to compute the Authorization header. &hellip;">
+  <meta name="description" content="Clients can occasionally get socket hangup errors when origin servers close connections without
+sending a Connection: close header. See
+https:// &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +81,61 @@ headers from clients to servers. OAuth1 requires glue code to compute the Author
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/12/16/milestone.html">Milestone 6</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-16T00:00:00-08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2011</time>
+        
+         | <a href="/2011/12/16/milestone.html#disqus_thread">Comments</a>
+        
+      </p>
+      <p>
+        
+  
+
+
+<span class="byline author vcard">Posted by <a href="http://github.com/s3u">Subbu Allamaraju</a></span>
+
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><ul>
+<li><p>Clients can occasionally get socket hangup errors when origin servers close connections without
+sending a <code>Connection: close</code> header. See
+<a href="https://github.com/joyent/node/issues/1135">https://github.com/joyent/node/issues/1135</a> for some
+background. To avoid such errors, http.request.js now automatically retries the request once
+provided the statement that caused the HTTP request is a <code>select</code>.</p></li>
+<li><p>The engine can now consume CSV response in addition to XML and JSON.</p></li>
+<li><p>Fixed request body processing for routes (see <a href="https://github.com/ql-io/ql.io/pull/161">issue 161</a>).</p></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -201,6 +257,10 @@ requests fail. The engine now looks for success responses and aggregates them.</
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2012/03/30/ql.io-0.5.html">ql.io 0.5</a>
+      </li>
+    
+      <li class="post">
         <a href="/2012/03/21/ql.io-on-cloudfoundry.html">ql.io on Cloud Foundry</a>
       </li>
     
@@ -234,10 +294,6 @@ requests fail. The engine now looks for success responses and aggregates them.</
     
       <li class="post">
         <a href="/2011/12/17/no.de.html">ql.io on Joyent&#8217;s no.de</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/12/16/milestone.html">Milestone 6</a>
       </li>
     
   </ul>

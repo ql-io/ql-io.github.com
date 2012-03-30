@@ -5,13 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Milestone 6 - ql.io blog</title>
+  <title>ql.io 0.5 - ql.io blog</title>
   <meta name="author" content="ql.io">
 
   
-  <meta name="description" content="Clients can occasionally get socket hangup errors when origin servers close connections without
-sending a Connection: close header. See
-https:// &hellip;">
+  <meta name="description" content="Today&#8217;s release of ql.io 0.5 includes the following changes: Enable caching on ql.io response. You can add using headers clause to routes to &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +18,7 @@ https:// &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://ql-io.github.com/2011/12/16/milestone.html">
+  <link rel="canonical" href="http://ql-io.github.com/2012/03/30/ql.io-0.5.html">
   <link href="/favicon.ico" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -84,7 +82,7 @@ https:// &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Milestone 6</h1>
+      <h1 class="entry-title">ql.io 0.5</h1>
     
     
       <p class="meta">
@@ -100,7 +98,7 @@ https:// &hellip;">
   
 
 
-<time datetime="2011-12-16T00:00:00-08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2011</time>
+<time datetime="2012-03-30T00:00:00-07:00" pubdate data-updated="true">Mar 30<span>th</span>, 2012</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -117,14 +115,46 @@ https:// &hellip;">
   </header>
 
 
-<div class="entry-content"><ul>
-<li><p>Clients can occasionally get socket hangup errors when origin servers close connections without
-sending a <code>Connection: close</code> header. See
-<a href="https://github.com/joyent/node/issues/1135">https://github.com/joyent/node/issues/1135</a> for some
-background. To avoid such errors, http.request.js now automatically retries the request once
-provided the statement that caused the HTTP request is a <code>select</code>.</p></li>
-<li><p>The engine can now consume CSV response in addition to XML and JSON.</p></li>
-<li><p>Fixed request body processing for routes (see <a href="https://github.com/ql-io/ql.io/pull/161">issue 161</a>).</p></li>
+<div class="entry-content"><p>Today&#8217;s release of ql.io 0.5 includes the following changes:</p>
+
+<!-- more -->
+
+
+<ul>
+<li>Enable caching on ql.io response. You can add <code>using headers</code> clause to routes to add arbitrary
+response headers, as in
+<code>return 'hello' via route '/hello' using method get using headers 'Cache-Control' = 'max-age=3600';</code></li>
+<li>[Experimental] Enable caching of responses from APIs for select statements. <code>create table</code>
+statements can now include an <code>expires &lt;interval&gt;</code> clause to specify an interval for caching
+responses of <code>select</code> statements, as in <code>create table auto.compute.key on select get from 'http://a.uri.net' ... expires 10;</code></li>
+<li>Process gzip/deflate encoded responses from upstream servers.</li>
+<li>Support <code>Content-Encoding</code> for incoming requests and gzip/deflate encode responses.</li>
+<li>Several bug fixes to maintain hierarchical logging of script execution. You can handle events
+emitted by the engine to log script execution flow. Watch this blog for an example soon.</li>
+<li>Factor out cluster management to a new module <a href="https://github.com/ql-io/cluster2">cluster2</a> to
+support deployments on <a href="https://github.com/ql-io/ql.io-cloudfoundry">CloudFoundry</a> and
+<a href="https://github.com/mulder/ql.io-heroku">Heroku</a>.</li>
+<li>New URI <code>/api</code> to navigate tables and routes - see
+<a href="http://ql-io.github.com/2012/03/12/en-route.html">En Route</a> for details.</li>
+<li>Support <code>delete</code> statements.</li>
+<li>Upgrade CodeMirror to 2.22 to resolve some quirks in the console UI.</li>
+<li>Add a page to show all installed npm packages. Try http://<host>:<monport>/deps
+(or http://localhost:3001/deps).</li>
+<li>Support custom xml2json convertors to enable clients interop with legacy XML APIs.</li>
+<li>Recover shutdown/stop from extraneous pid files.</li>
+<li>Simplify response decoding. In stead of setting encoding on the response, collect buffers into
+array, and then decode in the default impl of &#8216;parse response&#8217;.</li>
+<li>Removed /in-flight requests api.</li>
+<li>Enable numbers in <code>in</code> clause and args of udfs</li>
+<li>Export version from each module. You can find version of a module using
+<code>require('ql.io-&lt;somemodule&gt;').version</code>.</li>
+<li>Include version number in <code>User-Agent</code> and <code>Server</code> headers.</li>
+<li>Support scatter-gather for requests with bodies by adding a <code>foreach 'param'</code> for the
+<code>using bodyTemplate</code> cluase. This allows scripts to batchup POST and PUT requests.</li>
+<li>Support ejs body templates.</li>
+<li>Skip files that don&#8217;t end with <code>.ql</code>.</li>
+<li>&#8220;/ecv&#8221; check returns network ip instead of loopback address</li>
+<li>Let the engine allow a monkey patch to parse the response. Useful to process binary formats like avro.</li>
 </ul>
 
 </div>
@@ -134,7 +164,7 @@ provided the statement that caused the HTTP request is a <code>select</code>.</p
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ql-io.github.com/2011/12/16/milestone.html" data-via="" data-counturl="http://ql-io.github.com/2011/12/16/milestone.html" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ql-io.github.com/2012/03/30/ql.io-0.5.html" data-via="" data-counturl="http://ql-io.github.com/2012/03/30/ql.io-0.5.html" >Tweet</a>
   
   
   
@@ -143,14 +173,18 @@ provided the statement that caused the HTTP request is a <code>select</code>.</p
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/2011/12/08/milestone.html" title="Previous Post: Milestone 5">&laquo; Milestone 5</a>
+        <a class="basic-alignment left" href="/2012/03/21/ql.io-on-cloudfoundry.html" title="Previous Post: ql.io on Cloud Foundry">&laquo; ql.io on Cloud Foundry</a>
       
-      
-        <a class="basic-alignment right" href="/2011/12/17/no.de.html" title="Next Post: ql.io on Joyent's no.de">ql.io on Joyent's no.de &raquo;</a>
       
     </p>
   </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -226,7 +260,10 @@ provided the statement that caused the HTTP request is a <code>select</code>.</p
       var disqus_shortname = 'qlioblog';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://ql-io.github.com/2012/03/30/ql.io-0.5.html';
+        var disqus_url = 'http://ql-io.github.com/2012/03/30/ql.io-0.5.html';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

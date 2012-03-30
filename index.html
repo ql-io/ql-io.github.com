@@ -9,8 +9,7 @@
   <meta name="author" content="ql.io">
 
   
-  <meta name="description" content="Here are the steps to deploy ql.io on Cloud Foundry with node 0.6.x. This setup automatically spawns
-a cluster of node processes using node&#8217;s &hellip;">
+  <meta name="description" content="Today&#8217;s release of ql.io 0.5 includes the following changes: ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +79,57 @@ a cluster of node processes using node&#8217;s &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/03/30/ql.io-0.5.html">ql.io 0.5</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-30T00:00:00-07:00" pubdate data-updated="true">Mar 30<span>th</span>, 2012</time>
+        
+         | <a href="/2012/03/30/ql.io-0.5.html#disqus_thread">Comments</a>
+        
+      </p>
+      <p>
+        
+  
+
+
+<span class="byline author vcard">Posted by <a href="http://github.com/s3u">Subbu Allamaraju</a></span>
+
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today&#8217;s release of ql.io 0.5 includes the following changes:</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/2012/03/30/ql.io-0.5.html">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -626,61 +676,6 @@ curl http://foo.no.de/myapi
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/12/16/milestone.html">Milestone 6</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-16T00:00:00-08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2011</time>
-        
-         | <a href="/2011/12/16/milestone.html#disqus_thread">Comments</a>
-        
-      </p>
-      <p>
-        
-  
-
-
-<span class="byline author vcard">Posted by <a href="http://github.com/s3u">Subbu Allamaraju</a></span>
-
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ul>
-<li><p>Clients can occasionally get socket hangup errors when origin servers close connections without
-sending a <code>Connection: close</code> header. See
-<a href="https://github.com/joyent/node/issues/1135">https://github.com/joyent/node/issues/1135</a> for some
-background. To avoid such errors, http.request.js now automatically retries the request once
-provided the statement that caused the HTTP request is a <code>select</code>.</p></li>
-<li><p>The engine can now consume CSV response in addition to XML and JSON.</p></li>
-<li><p>Fixed request body processing for routes (see <a href="https://github.com/ql-io/ql.io/pull/161">issue 161</a>).</p></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -694,6 +689,10 @@ provided the statement that caused the HTTP request is a <code>select</code>.</p
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2012/03/30/ql.io-0.5.html">ql.io 0.5</a>
+      </li>
     
       <li class="post">
         <a href="/2012/03/21/ql.io-on-cloudfoundry.html">ql.io on Cloud Foundry</a>
@@ -729,10 +728,6 @@ provided the statement that caused the HTTP request is a <code>select</code>.</p
     
       <li class="post">
         <a href="/2011/12/17/no.de.html">ql.io on Joyent&#8217;s no.de</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/12/16/milestone.html">Milestone 6</a>
       </li>
     
   </ul>
