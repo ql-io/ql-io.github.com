@@ -9,9 +9,8 @@
   <meta name="author" content="ql.io">
 
   
-  <meta name="description" content="Clients can occasionally get socket hangup errors when origin servers close connections without
-sending a Connection: close header. See
-https:// &hellip;">
+  <meta name="description" content="If you&#8217;re interested in setting a ql.io app instance on a Joyent&#8217;s no.de, here is
+how. Clone the template app git clone git@github.com:ql &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +80,95 @@ https:// &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/12/17/no.de.html">ql.io on Joyent&#8217;s no.de</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-17T00:00:00-08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2011</time>
+        
+         | <a href="/2011/12/17/no.de.html#disqus_thread">Comments</a>
+        
+      </p>
+      <p>
+        
+  
+
+
+<span class="byline author vcard">Posted by <a href="http://github.com/s3u">Subbu Allamaraju</a></span>
+
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>If you&#8217;re interested in setting a ql.io app instance on a Joyent&#8217;s <a href="https://no.de/">no.de</a>, here is
+how.</p>
+
+<ul>
+<li>Clone the template app</li>
+</ul>
+
+
+<pre class="brush: bash toolbar: false;">
+git clone git@github.com:ql-io/ql-io.no.de.git
+</pre>
+
+
+<p>This template includes a server.js, some sample ql.io scripts.</p>
+
+<ul>
+<li><p>Create a SmartMachine instance on no.de.</p></li>
+<li><p>Push the app to no.de</p></li>
+</ul>
+
+
+<pre class="brush: bash toolbar: false;">
+# Assuming your smart machine name is "foo"
+cd ql-io.no.de
+git remote add foo.no.de foo.no.de:repo
+git push foo.no.de master
+</pre>
+
+
+<p>This will push the app to your SmartMachine, and bring it up.</p>
+
+<ul>
+<li>Try a sample route.</li>
+</ul>
+
+
+<pre class="brush: bash toolbar: false;">
+curl http://foo.no.de/myapi
+</pre>
+
+
+<p>Use <code>http://foo.no.de/console</code> to view the console.</p>
+
+<p>See <a href="http://ql.no.de/myapi">ql.no.de/myapi</a> to see this example in action.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -257,6 +345,10 @@ requests fail. The engine now looks for success responses and aggregates them.</
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2012/04/28/cluster2.html">cluster2</a>
+      </li>
+    
+      <li class="post">
         <a href="/2012/03/30/ql.io-0.5.html">ql.io 0.5</a>
       </li>
     
@@ -290,10 +382,6 @@ requests fail. The engine now looks for success responses and aggregates them.</
     
       <li class="post">
         <a href="/2012/01/09/benchmarks.html">ql.io Baseline Benchmarks</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/12/17/no.de.html">ql.io on Joyent&#8217;s no.de</a>
       </li>
     
   </ul>

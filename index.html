@@ -9,7 +9,8 @@
   <meta name="author" content="ql.io">
 
   
-  <meta name="description" content="Today&#8217;s release of ql.io 0.5 includes the following changes: ">
+  <meta name="description" content="cluster2 is a node.js (>= 0.6.x) compatible multi-process management module. This module grew out of
+our needs in operationalizing node.js for ql.io &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +80,68 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/04/28/cluster2.html">Cluster2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-28T00:00:00-07:00" pubdate data-updated="true">Apr 28<span>th</span>, 2012</time>
+        
+         | <a href="/2012/04/28/cluster2.html#disqus_thread">Comments</a>
+        
+      </p>
+      <p>
+        
+  
+
+
+<span class="byline author vcard">Posted by <a href="http://github.com/s3u">Subbu Allamaraju</a></span>
+
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>cluster2 is a node.js (>= 0.6.x) compatible multi-process management module. This module grew out of
+our needs in operationalizing node.js for <a href="https://github.com/ql-io/ql.io">ql.io</a> at eBay. Built on
+node&#8217;s <code>cluster</code>, cluster2 adds several safeguards and utility functions to help support real-world
+production scenarios:</p>
+
+<ul>
+<li>Scriptable start, shutdown and stop flows</li>
+<li>Worker monitoring for process deaths</li>
+<li>Worker recycling</li>
+<li>Graceful shutdown</li>
+<li>Idle timeouts</li>
+<li>Validation hooks (for other tools to monitor cluster2 apps)</li>
+<li>Events for logging cluster activities</li>
+</ul>
+
+
+<p>See <a href="cluster2">http://ql-io.github.com/cluster2/</a> for more info.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -587,95 +650,6 @@ purposes, this is my first systematic attempt.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/12/17/no.de.html">ql.io on Joyent&#8217;s no.de</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-17T00:00:00-08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2011</time>
-        
-         | <a href="/2011/12/17/no.de.html#disqus_thread">Comments</a>
-        
-      </p>
-      <p>
-        
-  
-
-
-<span class="byline author vcard">Posted by <a href="http://github.com/s3u">Subbu Allamaraju</a></span>
-
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>If you&#8217;re interested in setting a ql.io app instance on a Joyent&#8217;s <a href="https://no.de/">no.de</a>, here is
-how.</p>
-
-<ul>
-<li>Clone the template app</li>
-</ul>
-
-
-<pre class="brush: bash toolbar: false;">
-git clone git@github.com:ql-io/ql-io.no.de.git
-</pre>
-
-
-<p>This template includes a server.js, some sample ql.io scripts.</p>
-
-<ul>
-<li><p>Create a SmartMachine instance on no.de.</p></li>
-<li><p>Push the app to no.de</p></li>
-</ul>
-
-
-<pre class="brush: bash toolbar: false;">
-# Assuming your smart machine name is "foo"
-cd ql-io.no.de
-git remote add foo.no.de foo.no.de:repo
-git push foo.no.de master
-</pre>
-
-
-<p>This will push the app to your SmartMachine, and bring it up.</p>
-
-<ul>
-<li>Try a sample route.</li>
-</ul>
-
-
-<pre class="brush: bash toolbar: false;">
-curl http://foo.no.de/myapi
-</pre>
-
-
-<p>Use <code>http://foo.no.de/console</code> to view the console.</p>
-
-<p>See <a href="http://ql.no.de/myapi">ql.no.de/myapi</a> to see this example in action.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -689,6 +663,10 @@ curl http://foo.no.de/myapi
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2012/04/28/cluster2.html">cluster2</a>
+      </li>
     
       <li class="post">
         <a href="/2012/03/30/ql.io-0.5.html">ql.io 0.5</a>
@@ -724,10 +702,6 @@ curl http://foo.no.de/myapi
     
       <li class="post">
         <a href="/2012/01/09/benchmarks.html">ql.io Baseline Benchmarks</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/12/17/no.de.html">ql.io on Joyent&#8217;s no.de</a>
       </li>
     
   </ul>

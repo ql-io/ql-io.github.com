@@ -4,7 +4,7 @@
   <title><![CDATA[ql.io blog]]></title>
   <link href="http://ql-io.github.com/atom.xml" rel="self"/>
   <link href="http://ql-io.github.com/"/>
-  <updated>2012-03-30T08:47:58-07:00</updated>
+  <updated>2012-04-28T20:28:34-07:00</updated>
   <id>http://ql-io.github.com/</id>
   <author>
     <name><![CDATA[ql.io]]></name>
@@ -12,6 +12,31 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[cluster2]]></title>
+    <link href="http://ql-io.github.com/2012/04/28/cluster2.html"/>
+    <updated>2012-04-28T00:00:00-07:00</updated>
+    <id>http://ql-io.github.com/2012/04/28/cluster2</id>
+    <content type="html"><![CDATA[<p>cluster2 is a node.js (>= 0.6.x) compatible multi-process management module. This module grew out of
+our needs in operationalizing node.js for <a href="https://github.com/ql-io/ql.io">ql.io</a> at eBay. Built on
+node&#8217;s <code>cluster</code>, cluster2 adds several safeguards and utility functions to help support real-world
+production scenarios:</p>
+
+<ul>
+<li>Scriptable start, shutdown and stop flows</li>
+<li>Worker monitoring for process deaths</li>
+<li>Worker recycling</li>
+<li>Graceful shutdown</li>
+<li>Idle timeouts</li>
+<li>Validation hooks (for other tools to monitor cluster2 apps)</li>
+<li>Events for logging cluster activities</li>
+</ul>
+
+
+<p>See <a href="cluster2">http://ql-io.github.com/cluster2/</a> for more info.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ql.io 0.5]]></title>

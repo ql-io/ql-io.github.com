@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>ql.io Launch - ql.io blog</title>
+  <title>cluster2 - ql.io blog</title>
   <meta name="author" content="ql.io">
 
   
-  <meta name="description" content="See Announcing ql.io.
-">
+  <meta name="description" content="cluster2 is a node.js (>= 0.6.x) compatible multi-process management module. This module grew out of
+our needs in operationalizing node.js for ql.io &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://ql-io.github.com/2011/11/29/launch.html">
+  <link rel="canonical" href="http://ql-io.github.com/2012/04/28/cluster2.html">
   <link href="/favicon.ico" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -83,7 +83,7 @@
   
   <header>
     
-      <h1 class="entry-title">ql.io Launch</h1>
+      <h1 class="entry-title">Cluster2</h1>
     
     
       <p class="meta">
@@ -99,7 +99,7 @@
   
 
 
-<time datetime="2011-11-29T00:00:00-08:00" pubdate data-updated="true">Nov 29<span>th</span>, 2011</time>
+<time datetime="2012-04-28T00:00:00-07:00" pubdate data-updated="true">Apr 28<span>th</span>, 2012</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -116,7 +116,23 @@
   </header>
 
 
-<div class="entry-content"><p>See <a href="http://www.ebaytechblog.com/2011/11/30/announcing-ql-io/">Announcing ql.io</a>.</p>
+<div class="entry-content"><p>cluster2 is a node.js (>= 0.6.x) compatible multi-process management module. This module grew out of
+our needs in operationalizing node.js for <a href="https://github.com/ql-io/ql.io">ql.io</a> at eBay. Built on
+node&#8217;s <code>cluster</code>, cluster2 adds several safeguards and utility functions to help support real-world
+production scenarios:</p>
+
+<ul>
+<li>Scriptable start, shutdown and stop flows</li>
+<li>Worker monitoring for process deaths</li>
+<li>Worker recycling</li>
+<li>Graceful shutdown</li>
+<li>Idle timeouts</li>
+<li>Validation hooks (for other tools to monitor cluster2 apps)</li>
+<li>Events for logging cluster activities</li>
+</ul>
+
+
+<p>See <a href="cluster2">http://ql-io.github.com/cluster2/</a> for more info.</p>
 </div>
 
 
@@ -124,7 +140,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ql-io.github.com/2011/11/29/launch.html" data-via="" data-counturl="http://ql-io.github.com/2011/11/29/launch.html" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ql-io.github.com/2012/04/28/cluster2.html" data-via="" data-counturl="http://ql-io.github.com/2012/04/28/cluster2.html" >Tweet</a>
   
   
   
@@ -133,12 +149,18 @@
     
     <p class="meta">
       
+        <a class="basic-alignment left" href="/2012/03/30/ql.io-0.5.html" title="Previous Post: ql.io 0.5">&laquo; ql.io 0.5</a>
       
-        <a class="basic-alignment right" href="/2011/12/08/milestone.html" title="Next Post: Milestone 5">Milestone 5 &raquo;</a>
       
     </p>
   </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -214,7 +236,10 @@
       var disqus_shortname = 'qlioblog';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://ql-io.github.com/2012/04/28/cluster2.html';
+        var disqus_url = 'http://ql-io.github.com/2012/04/28/cluster2.html';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
