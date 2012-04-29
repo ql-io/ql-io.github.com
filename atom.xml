@@ -4,7 +4,7 @@
   <title><![CDATA[ql.io blog]]></title>
   <link href="http://ql-io.github.com/atom.xml" rel="self"/>
   <link href="http://ql-io.github.com/"/>
-  <updated>2012-04-28T20:28:34-07:00</updated>
+  <updated>2012-04-28T20:33:26-07:00</updated>
   <id>http://ql-io.github.com/</id>
   <author>
     <name><![CDATA[ql.io]]></name>
@@ -34,7 +34,7 @@ production scenarios:</p>
 </ul>
 
 
-<p>See <a href="cluster2">http://ql-io.github.com/cluster2/</a> for more info.</p>
+<p>See <a href="http://ql-io.github.com/cluster2/">cluster2</a> for more info.</p>
 ]]></content>
   </entry>
   
