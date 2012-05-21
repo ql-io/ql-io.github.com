@@ -9,8 +9,7 @@
   <meta name="author" content="ql.io">
 
   
-  <meta name="description" content="cluster2 is a node.js (>= 0.6.x) compatible multi-process management module. This module grew out of
-our needs in operationalizing node.js for ql.io &hellip;">
+  <meta name="description" content="Today&#8217;s release of ql.io 0.6 includes the following changes: Support array style reference in columns clause, such as select 'b-1', 'b-3'['c-1 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +79,85 @@ our needs in operationalizing node.js for ql.io &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/05/21/ql.io-0.6.html">ql.io 0.6</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-21T00:00:00-07:00" pubdate data-updated="true">May 21<span>st</span>, 2012</time>
+        
+         | <a href="/2012/05/21/ql.io-0.6.html#disqus_thread">Comments</a>
+        
+      </p>
+      <p>
+        
+  
+
+
+<span class="byline author vcard">Posted by <a href="http://github.com/s3u">Subbu Allamaraju</a></span>
+
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today&#8217;s release of ql.io 0.6 includes the following changes:</p>
+
+<ul>
+<li>Support array style reference in columns clause, such as <code>select 'b-1', 'b-3'['c-1'] from a</code>.</li>
+<li>Disable ability to enable/disable ecv checks by default. You can turn it on by adding arg
+ <code>--ecvControl true</code> to the start script.</li>
+<li>Add optional parameters in route. Including &#8220;with optional params&#8221; in route would make params
+without <code>^</code> prefix optional. When this clause is present, only required tokens are used for
+matching a request to a route.</li>
+<li>Be able to start the server on multiple ports</li>
+<li>Added support for multiple attachments. See docs on insert http://ql.io/docs/insert</li>
+<li>End pending connections on close after responses are written.</li>
+<li>Support cache events (hit, miss, new, error, info, heartbeat)</li>
+<li>Switch to new cluster2</li>
+<li>Added new syntaxes &#8220;with part&#8221; and opaque insert param.</li>
+<li>Fix expression parsing in string template so that a token like <code>"{obj.prop[?(@.price &gt; 2)]}"</code> is
+valid</li>
+<li>Add support for escaped quotes in string values</li>
+<li>Update PEG.js to 0.7.</li>
+<li>Remove duplicates from in clause.</li>
+<li>Use <code>hasOwnProperty</code> in place of prop lookup while joining</li>
+<li>Deal with non UTF-8 encodings from upstream resources</li>
+<li>When joining, use &#8216;==&#8217; to maintain backwards compat</li>
+<li>Refactor logging to error, access, proxy and default logs. The proxy log file contains outgoing
+req/resp, access log contains incoming requests, error log contains all errors and warnings,
+and the rest go to ql.io.log. All these files are rotated.</li>
+<li>Include a payload with begin events</li>
+<li>Support local offset and limit</li>
+<li>Fix the case of alias names with joins and UDFs.</li>
+<li>Add UDFs in where clause to post process rows. You can either tweak or remove a row. See
+https://gist.github.com/2334012 for semantics of UDFs. UDF support for the where clause is coming
+in version 0.7.</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -591,65 +669,6 @@ complexity of such APIs.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2012/01/09/benchmarks.html">ql.io Baseline Benchmarks</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-01-09T00:00:00-08:00" pubdate data-updated="true">Jan 9<span>th</span>, 2012</time>
-        
-         | <a href="/2012/01/09/benchmarks.html#disqus_thread">Comments</a>
-        
-      </p>
-      <p>
-        
-  
-
-
-<span class="byline author vcard">Posted by <a href="http://github.com/s3u">Subbu Allamaraju</a></span>
-
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>One of the key visible benefits of <a href="http://ql.io">ql.io</a> is that it eliminates the code noise that
-is common in writing HTTP client apps. As a DSL for writing HTTP client code, it focuses on
-automating the task of making multiple HTTP requests and processing responses in the best order
-possible taking care of paralleization, orchestration, projections and normalizations behind the
-scenes.</p>
-
-<p>In this post, I would like to present the baseline performance benchmarks of ql.io running on
-node.js 0.4.12. Though I have done some ad hoc tests in the last 2-3 months for hardware sizing
-purposes, this is my first systematic attempt.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/2012/01/09/benchmarks.html">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -663,6 +682,10 @@ purposes, this is my first systematic attempt.</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2012/05/21/ql.io-0.6.html">ql.io 0.6</a>
+      </li>
     
       <li class="post">
         <a href="/2012/04/28/cluster2.html">cluster2</a>
@@ -698,10 +721,6 @@ purposes, this is my first systematic attempt.</p>
     
       <li class="post">
         <a href="/2012/01/17/v0.4-beta.html">ql.io 0.4.0-beta</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2012/01/09/benchmarks.html">ql.io Baseline Benchmarks</a>
       </li>
     
   </ul>

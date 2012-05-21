@@ -4,7 +4,7 @@
   <title><![CDATA[ql.io blog]]></title>
   <link href="http://ql-io.github.com/atom.xml" rel="self"/>
   <link href="http://ql-io.github.com/"/>
-  <updated>2012-04-28T20:33:26-07:00</updated>
+  <updated>2012-05-21T14:38:17-07:00</updated>
   <id>http://ql-io.github.com/</id>
   <author>
     <name><![CDATA[ql.io]]></name>
@@ -12,6 +12,48 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ql.io 0.6]]></title>
+    <link href="http://ql-io.github.com/2012/05/21/ql.io-0.6.html"/>
+    <updated>2012-05-21T00:00:00-07:00</updated>
+    <id>http://ql-io.github.com/2012/05/21/ql.io-0.6</id>
+    <content type="html"><![CDATA[<p>Today&#8217;s release of ql.io 0.6 includes the following changes:</p>
+
+<ul>
+<li>Support array style reference in columns clause, such as <code>select 'b-1', 'b-3'['c-1'] from a</code>.</li>
+<li>Disable ability to enable/disable ecv checks by default. You can turn it on by adding arg
+ <code>--ecvControl true</code> to the start script.</li>
+<li>Add optional parameters in route. Including &#8220;with optional params&#8221; in route would make params
+without <code>^</code> prefix optional. When this clause is present, only required tokens are used for
+matching a request to a route.</li>
+<li>Be able to start the server on multiple ports</li>
+<li>Added support for multiple attachments. See docs on insert http://ql.io/docs/insert</li>
+<li>End pending connections on close after responses are written.</li>
+<li>Support cache events (hit, miss, new, error, info, heartbeat)</li>
+<li>Switch to new cluster2</li>
+<li>Added new syntaxes &#8220;with part&#8221; and opaque insert param.</li>
+<li>Fix expression parsing in string template so that a token like <code>"{obj.prop[?(@.price &gt; 2)]}"</code> is
+valid</li>
+<li>Add support for escaped quotes in string values</li>
+<li>Update PEG.js to 0.7.</li>
+<li>Remove duplicates from in clause.</li>
+<li>Use <code>hasOwnProperty</code> in place of prop lookup while joining</li>
+<li>Deal with non UTF-8 encodings from upstream resources</li>
+<li>When joining, use &#8216;==&#8217; to maintain backwards compat</li>
+<li>Refactor logging to error, access, proxy and default logs. The proxy log file contains outgoing
+req/resp, access log contains incoming requests, error log contains all errors and warnings,
+and the rest go to ql.io.log. All these files are rotated.</li>
+<li>Include a payload with begin events</li>
+<li>Support local offset and limit</li>
+<li>Fix the case of alias names with joins and UDFs.</li>
+<li>Add UDFs in where clause to post process rows. You can either tweak or remove a row. See
+https://gist.github.com/2334012 for semantics of UDFs. UDF support for the where clause is coming
+in version 0.7.</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[cluster2]]></title>
