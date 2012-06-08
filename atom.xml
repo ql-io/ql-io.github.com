@@ -4,7 +4,7 @@
   <title><![CDATA[ql.io blog]]></title>
   <link href="http://ql-io.github.com/atom.xml" rel="self"/>
   <link href="http://ql-io.github.com/"/>
-  <updated>2012-06-08T16:14:37-07:00</updated>
+  <updated>2012-06-08T16:20:43-07:00</updated>
   <id>http://ql-io.github.com/</id>
   <author>
     <name><![CDATA[ql.io]]></name>
@@ -19,12 +19,12 @@
     <updated>2012-06-08T00:00:00-07:00</updated>
     <id>http://ql-io.github.com/2012/06/08/plan</id>
     <content type="html"><![CDATA[<p>One of the core strengths of ql.io is evented orchestration of reads and writes to HTTP APIs using a
-declarative language. In recent weeks, the core processing algorithm used to process the statements
+declarative language. In recent weeks, the core processing algorithm used to process q.l.io scripts
 went through an overhaul to easily infer what goes on when you submit a script for execution. The
 outcome of this exercise is a rewrite of the compiler which now takes a given script and outputs an
 execution plan. This helped us achieve two things - further simplification of the orchestration
-algorithm (which is now just about 80 lines long) and visualization of a script to identify
-potential latecy bottlenecks.</p>
+algorithm (which is now just about 80 lines long), and visualization to identify potential latecy
+bottlenecks.</p>
 
 <p>Read on to find out how to generate and visualize execution plans.</p>
 
