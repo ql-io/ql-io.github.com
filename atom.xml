@@ -4,7 +4,7 @@
   <title><![CDATA[ql.io blog]]></title>
   <link href="http://ql-io.github.com/atom.xml" rel="self"/>
   <link href="http://ql-io.github.com/"/>
-  <updated>2012-05-21T14:38:17-07:00</updated>
+  <updated>2012-06-08T16:14:37-07:00</updated>
   <id>http://ql-io.github.com/</id>
   <author>
     <name><![CDATA[ql.io]]></name>
@@ -12,6 +12,92 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Evented Orchestration]]></title>
+    <link href="http://ql-io.github.com/2012/06/08/plan.html"/>
+    <updated>2012-06-08T00:00:00-07:00</updated>
+    <id>http://ql-io.github.com/2012/06/08/plan</id>
+    <content type="html"><![CDATA[<p>One of the core strengths of ql.io is evented orchestration of reads and writes to HTTP APIs using a
+declarative language. In recent weeks, the core processing algorithm used to process the statements
+went through an overhaul to easily infer what goes on when you submit a script for execution. The
+outcome of this exercise is a rewrite of the compiler which now takes a given script and outputs an
+execution plan. This helped us achieve two things - further simplification of the orchestration
+algorithm (which is now just about 80 lines long) and visualization of a script to identify
+potential latecy bottlenecks.</p>
+
+<p>Read on to find out how to generate and visualize execution plans.</p>
+
+<p>For instance, consider the script</p>
+
+<pre><code>prodid = select ProductID[0].Value from eBay.FindProducts where
+    QueryKeywords = 'macbook pro';
+details = select * from eBay.ProductDetails where
+    ProductID in ('{prodid}') and ProductType = 'Reference';
+reviews = select * from eBay.ProductReviews where
+    ProductID in ('{prodid}') and ProductType = 'Reference';
+
+return select d.ProductID[0].Value as id, d.Title as title,
+    d.ReviewCount as reviewCount, r.ReviewDetails.AverageRating as rating
+    from details as d, reviews as r
+    where d.ProductID[0].Value = r.ProductID.Value
+    via route '/myapi' using method get;
+</code></pre>
+
+<p>A visualization of the execution plan of this script is below.</p>
+
+<div style="max-width: 100%;overflow:auto">
+<a href="http://ql-io.github.com/images/2012-06-08-plan-0.svg"><img src="http://ql-io.github.com/images/2012-06-08-plan-0.svg" style="max-width: 1000%" alt="A visualization of a script with one fork and one join"></a>
+</div>
+
+
+<p>By looking at this execution plan we can infer the following:</p>
+
+<ul>
+<li>The select statemet on line 8 depends on the statements on lines 3 and 5.</li>
+<li>The overall latency of this script depends on the slowest of the statements on lines 3 and 5.</li>
+</ul>
+
+
+<p>Here is the execution plan of another script. This script takes two inputs - a user&#8217;s identity and a
+set of IDs of some items, and gets some details from two different APIs (the bottom two nodes). The
+responses from those APIs trigger some in-process data extractions and transformations which join
+on the node below the node at the top.</p>
+
+<div style="max-width: 100%;overflow:auto">
+<a href="http://ql-io.github.com/images/2012-06-08-plan-1.svg"><img src="http://ql-io.github.com/images/2012-06-08-plan-1.svg" style="max-width: 1000%" alt="Another visualization"></a>
+</div>
+
+
+<p>Again, the overall latency depends on the bottom two nodes.</p>
+
+<p>Here is the execution plan of another script which shows one node ([5]) blocking on another ([1]).</p>
+
+<div style="max-width: 100%;overflow:auto">
+<a href="http://ql-io.github.com/images/2012-06-08-plan-3.svg"><img src="http://ql-io.github.com/images/2012-06-08-plan-3.svg" style="max-width: 1000%" alt="Another visualization"></a>
+</div>
+
+
+<h2>Generating Excecution Plan</h2>
+
+<p>Generating the execution plan is easy. Here is a node.js script.</p>
+
+<script src="https://gist.github.com/2898580.js"> </script>
+
+
+<p>You can use the compiler in the browser too. Here is script that works in any modern browser.</p>
+
+<script src="https://gist.github.com/2898590.js"> </script>
+
+
+<h2>Visualization</h2>
+
+<p>I wrote a small tool to compile a script and generate a .dot file, and feed the output to
+<a href="http://www.graphviz.org/">Graphviz</a>.</p>
+
+<p><a href="http://bl.ocks.org/d/2898080/">Dot file generator</a> - to generate .dot files for ql.io scripts.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ql.io 0.6]]></title>

@@ -9,7 +9,8 @@
   <meta name="author" content="ql.io">
 
   
-  <meta name="description" content="Today&#8217;s release of ql.io 0.6 includes the following changes: Support array style reference in columns clause, such as select 'b-1', 'b-3'['c-1 &hellip;">
+  <meta name="description" content="One of the core strengths of ql.io is evented orchestration of reads and writes to HTTP APIs using a
+declarative language. In recent weeks, the core &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +80,129 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/06/08/plan.html">Evented Orchestration</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-08T00:00:00-07:00" pubdate data-updated="true">Jun 8<span>th</span>, 2012</time>
+        
+         | <a href="/2012/06/08/plan.html#disqus_thread">Comments</a>
+        
+      </p>
+      <p>
+        
+  
+
+
+<span class="byline author vcard">Posted by <a href="http://github.com/s3u">Subbu Allamaraju</a></span>
+
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>One of the core strengths of ql.io is evented orchestration of reads and writes to HTTP APIs using a
+declarative language. In recent weeks, the core processing algorithm used to process the statements
+went through an overhaul to easily infer what goes on when you submit a script for execution. The
+outcome of this exercise is a rewrite of the compiler which now takes a given script and outputs an
+execution plan. This helped us achieve two things - further simplification of the orchestration
+algorithm (which is now just about 80 lines long) and visualization of a script to identify
+potential latecy bottlenecks.</p>
+
+<p>Read on to find out how to generate and visualize execution plans.</p>
+
+<p>For instance, consider the script</p>
+
+<pre><code>prodid = select ProductID[0].Value from eBay.FindProducts where
+    QueryKeywords = 'macbook pro';
+details = select * from eBay.ProductDetails where
+    ProductID in ('{prodid}') and ProductType = 'Reference';
+reviews = select * from eBay.ProductReviews where
+    ProductID in ('{prodid}') and ProductType = 'Reference';
+
+return select d.ProductID[0].Value as id, d.Title as title,
+    d.ReviewCount as reviewCount, r.ReviewDetails.AverageRating as rating
+    from details as d, reviews as r
+    where d.ProductID[0].Value = r.ProductID.Value
+    via route '/myapi' using method get;
+</code></pre>
+
+<p>A visualization of the execution plan of this script is below.</p>
+
+<div style="max-width: 100%;overflow:auto">
+<a href="/images/2012-06-08-plan-0.svg"><img src="/images/2012-06-08-plan-0.svg" style="max-width: 1000%" alt="A visualization of a script with one fork and one join"></a>
+</div>
+
+
+<p>By looking at this execution plan we can infer the following:</p>
+
+<ul>
+<li>The select statemet on line 8 depends on the statements on lines 3 and 5.</li>
+<li>The overall latency of this script depends on the slowest of the statements on lines 3 and 5.</li>
+</ul>
+
+
+<p>Here is the execution plan of another script. This script takes two inputs - a user&#8217;s identity and a
+set of IDs of some items, and gets some details from two different APIs (the bottom two nodes). The
+responses from those APIs trigger some in-process data extractions and transformations which join
+on the node below the node at the top.</p>
+
+<div style="max-width: 100%;overflow:auto">
+<a href="/images/2012-06-08-plan-1.svg"><img src="/images/2012-06-08-plan-1.svg" style="max-width: 1000%" alt="Another visualization"></a>
+</div>
+
+
+<p>Again, the overall latency depends on the bottom two nodes.</p>
+
+<p>Here is the execution plan of another script which shows one node ([5]) blocking on another ([1]).</p>
+
+<div style="max-width: 100%;overflow:auto">
+<a href="/images/2012-06-08-plan-3.svg"><img src="/images/2012-06-08-plan-3.svg" style="max-width: 1000%" alt="Another visualization"></a>
+</div>
+
+
+<h2>Generating Excecution Plan</h2>
+
+<p>Generating the execution plan is easy. Here is a node.js script.</p>
+
+<script src="https://gist.github.com/2898580.js"> </script>
+
+
+<p>You can use the compiler in the browser too. Here is script that works in any modern browser.</p>
+
+<script src="https://gist.github.com/2898590.js"> </script>
+
+
+<h2>Visualization</h2>
+
+<p>I wrote a small tool to compile a script and generate a .dot file, and feed the output to
+<a href="http://www.graphviz.org/">Graphviz</a>.</p>
+
+<p><a href="http://bl.ocks.org/d/2898080/">Dot file generator</a> - to generate .dot files for ql.io scripts.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -601,74 +725,6 @@ complexity of such APIs.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2012/01/17/v0.4-beta.html">ql.io 0.4.0-beta</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-01-17T00:00:00-08:00" pubdate data-updated="true">Jan 17<span>th</span>, 2012</time>
-        
-         | <a href="/2012/01/17/v0.4-beta.html#disqus_thread">Comments</a>
-        
-      </p>
-      <p>
-        
-  
-
-
-<span class="byline author vcard">Posted by <a href="http://github.com/s3u">Subbu Allamaraju</a></span>
-
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>This is a beta release of ql.io on node.js 0.6.x.</p>
-
-<ul>
-<li>Use native cluster module to start the app</li>
-<li>Upgrade all dependencies to the latest</li>
-<li>Limit response size to 10000000 bytes from upstream sources. You can change this with
-<code>maxResponseLength</code> in the config.</li>
-<li>Limit outgoing requests per statement to 50. You can change this with <code>maxRequests</code> in the config.</li>
-<li>Chain events for logging done with log-emitter.</li>
-<li>Add a new JSON based interface to browse tables and routes. Try <code>/routes</code> to start browsing.</li>
-</ul>
-
-
-<p>If you are interested in running ql.io on node.js 0.4.x, use the
-<a href="https://github.com/ql-io/ql.io/tree/0.3">0.3 branch</a>.</p>
-
-<p>To create an app using ql.io 0.4 modules, follow the usual steps:</p>
-
-<pre><code> mkdir myapp
- cd myapp
- curl https://raw.github.com/ql-io/ql.io/master/modules/template/init.sh | bash
- bin/start.sh
-</code></pre>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -682,6 +738,10 @@ complexity of such APIs.</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2012/06/08/plan.html">Evented Orchestration</a>
+      </li>
     
       <li class="post">
         <a href="/2012/05/21/ql.io-0.6.html">ql.io 0.6</a>
@@ -717,10 +777,6 @@ complexity of such APIs.</p>
     
       <li class="post">
         <a href="/2012/01/24/node-summit-slides.html">Slides from Node Summit</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2012/01/17/v0.4-beta.html">ql.io 0.4.0-beta</a>
       </li>
     
   </ul>
