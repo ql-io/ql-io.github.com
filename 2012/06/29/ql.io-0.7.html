@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>ql.io 0.5 - ql.io blog</title>
+  <title>ql.io 0.7 - ql.io blog</title>
   <meta name="author" content="ql.io">
 
   
-  <meta name="description" content="Today&#8217;s release of ql.io 0.5 includes the following changes: Enable caching on ql.io response. You can add using headers clause to routes to &hellip;">
+  <meta name="description" content="Today&#8217;s release of ql.io 0.7 includes the following changes: Features Fallback syntax to the language - see https://github.com/ql-io/ql.io/wiki &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://ql-io.github.com/2012/03/30/ql.io-0.5.html">
+  <link rel="canonical" href="http://ql-io.github.com/2012/06/29/ql.io-0.7.html">
   <link href="/favicon.ico" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -82,7 +82,7 @@
   
   <header>
     
-      <h1 class="entry-title">ql.io 0.5</h1>
+      <h1 class="entry-title">ql.io 0.7</h1>
     
     
       <p class="meta">
@@ -98,7 +98,7 @@
   
 
 
-<time datetime="2012-03-30T00:00:00-07:00" pubdate data-updated="true">Mar 30<span>th</span>, 2012</time>
+<time datetime="2012-06-29T00:00:00-07:00" pubdate data-updated="true">Jun 29<span>th</span>, 2012</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -108,53 +108,36 @@
   
 
 
-<span class="byline author vcard">Posted by <a href="http://github.com/s3u">Subbu Allamaraju</a></span>
+
 
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Today&#8217;s release of ql.io 0.5 includes the following changes:</p>
+<div class="entry-content"><p>Today&#8217;s release of ql.io 0.7 includes the following changes:</p>
 
-<!-- more -->
-
+<h3>Features</h3>
 
 <ul>
-<li>Enable caching on ql.io response. You can add <code>using headers</code> clause to routes to add arbitrary
-response headers, as in
-<code>return 'hello' via route '/hello' using method get using headers 'Cache-Control' = 'max-age=3600';</code></li>
-<li>[Experimental] Enable caching of responses from APIs for select statements. <code>create table</code>
-statements can now include an <code>expires &lt;interval&gt;</code> clause to specify an interval for caching
-responses of <code>select</code> statements, as in <code>create table auto.compute.key on select get from 'http://a.uri.net' ... expires 10;</code></li>
-<li>Process gzip/deflate encoded responses from upstream servers.</li>
-<li>Support <code>Content-Encoding</code> for incoming requests and gzip/deflate encode responses.</li>
-<li>Several bug fixes to maintain hierarchical logging of script execution. You can handle events
-emitted by the engine to log script execution flow. Watch this blog for an example soon.</li>
-<li>Factor out cluster management to a new module <a href="https://github.com/ql-io/cluster2">cluster2</a> to
-support deployments on <a href="https://github.com/ql-io/ql.io-cloudfoundry">CloudFoundry</a> and
-<a href="https://github.com/mulder/ql.io-heroku">Heroku</a>.</li>
-<li>New URI <code>/api</code> to navigate tables and routes - see
-<a href="http://ql-io.github.com/2012/03/12/en-route.html">En Route</a> for details.</li>
-<li>Support <code>delete</code> statements.</li>
-<li>Upgrade CodeMirror to 2.22 to resolve some quirks in the console UI.</li>
-<li>Add a page to show all installed npm packages. Try http://<host>:<monport>/deps
-(or http://localhost:3001/deps).</li>
-<li>Support custom xml2json convertors to enable clients interop with legacy XML APIs.</li>
-<li>Recover shutdown/stop from extraneous pid files.</li>
-<li>Simplify response decoding. In stead of setting encoding on the response, collect buffers into
-array, and then decode in the default impl of &#8216;parse response&#8217;.</li>
-<li>Removed /in-flight requests api.</li>
-<li>Enable numbers in <code>in</code> clause and args of udfs</li>
-<li>Export version from each module. You can find version of a module using
-<code>require('ql.io-&lt;somemodule&gt;').version</code>.</li>
-<li>Include version number in <code>User-Agent</code> and <code>Server</code> headers.</li>
-<li>Support scatter-gather for requests with bodies by adding a <code>foreach 'param'</code> for the
-<code>using bodyTemplate</code> cluase. This allows scripts to batchup POST and PUT requests.</li>
-<li>Support ejs body templates.</li>
-<li>Skip files that don&#8217;t end with <code>.ql</code>.</li>
-<li>&#8220;/ecv&#8221; check returns network ip instead of loopback address</li>
-<li>Let the engine allow a monkey patch to parse the response. Useful to process binary formats like avro.</li>
+<li>Fallback syntax to the language - see https://github.com/ql-io/ql.io/wiki/%5BProposal%5D-Optional-Inputs-and-Errors</li>
+<li>Compiler rewritten to output the DAG with dependencies</li>
+<li>Explicit depedencies between modules</li>
+<li>Support for pre-requisite params - see https://github.com/ql-io/ql.io/wiki/%5BProposal%5D-Optional-Inputs-and-Errors</li>
+<li>Retry once for idempotent requests on timeouts</li>
+<li>Update the context with the udf filtered data</li>
+<li>Support C style block comments</li>
+<li>No Compression if the CPU load is > 50%</li>
+</ul>
+
+
+<h3>Bug Fixes</h3>
+
+<ul>
+<li>Http client Agent maxSockets increased to 1000 to avoid request backlog on any given socket -  https://github.com/ql-io/ql.io/issues/512</li>
+<li>Fix https://github.com/ql-io/ql.io/issues/478</li>
+<li>Fix https://github.com/ql-io/ql.io/issues/13 Disable autorun in the console.</li>
+<li>Add file path/name to comiple errors</li>
 </ul>
 
 </div>
@@ -164,7 +147,7 @@ array, and then decode in the default impl of &#8216;parse response&#8217;.</li>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ql-io.github.com/2012/03/30/ql.io-0.5.html" data-via="" data-counturl="http://ql-io.github.com/2012/03/30/ql.io-0.5.html" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ql-io.github.com/2012/06/29/ql.io-0.7.html" data-via="" data-counturl="http://ql-io.github.com/2012/06/29/ql.io-0.7.html" >Tweet</a>
   
   
   
@@ -173,10 +156,8 @@ array, and then decode in the default impl of &#8216;parse response&#8217;.</li>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/2012/03/21/ql.io-on-cloudfoundry.html" title="Previous Post: ql.io on Cloud Foundry">&laquo; ql.io on Cloud Foundry</a>
+        <a class="basic-alignment left" href="/2012/06/08/plan.html" title="Previous Post: Evented Orchestration">&laquo; Evented Orchestration</a>
       
-      
-        <a class="basic-alignment right" href="/2012/04/28/cluster2.html" title="Next Post: cluster2">cluster2 &raquo;</a>
       
     </p>
   </footer>
@@ -263,8 +244,8 @@ array, and then decode in the default impl of &#8216;parse response&#8217;.</li>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://ql-io.github.com/2012/03/30/ql.io-0.5.html';
-        var disqus_url = 'http://ql-io.github.com/2012/03/30/ql.io-0.5.html';
+        var disqus_identifier = 'http://ql-io.github.com/2012/06/29/ql.io-0.7.html';
+        var disqus_url = 'http://ql-io.github.com/2012/06/29/ql.io-0.7.html';
         var disqus_script = 'embed.js';
       
     (function () {

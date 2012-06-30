@@ -9,8 +9,7 @@
   <meta name="author" content="ql.io">
 
   
-  <meta name="description" content="One of the core strengths of ql.io is evented orchestration of reads and writes to HTTP APIs using a
-declarative language. In recent weeks, the core &hellip;">
+  <meta name="description" content="Today&#8217;s release of ql.io 0.7 includes the following changes: Features Fallback syntax to the language - see https://github.com/ql-io/ql.io/wiki &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +79,76 @@ declarative language. In recent weeks, the core &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/06/29/ql.io-0.7.html">ql.io 0.7</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-29T00:00:00-07:00" pubdate data-updated="true">Jun 29<span>th</span>, 2012</time>
+        
+         | <a href="/2012/06/29/ql.io-0.7.html#disqus_thread">Comments</a>
+        
+      </p>
+      <p>
+        
+  
+
+
+
+
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today&#8217;s release of ql.io 0.7 includes the following changes:</p>
+
+<h3>Features</h3>
+
+<ul>
+<li>Fallback syntax to the language - see https://github.com/ql-io/ql.io/wiki/%5BProposal%5D-Optional-Inputs-and-Errors</li>
+<li>Compiler rewritten to output the DAG with dependencies</li>
+<li>Explicit depedencies between modules</li>
+<li>Support for pre-requisite params - see https://github.com/ql-io/ql.io/wiki/%5BProposal%5D-Optional-Inputs-and-Errors</li>
+<li>Retry once for idempotent requests on timeouts</li>
+<li>Update the context with the udf filtered data</li>
+<li>Support C style block comments</li>
+<li>No Compression if the CPU load is > 50%</li>
+</ul>
+
+
+<h3>Bug Fixes</h3>
+
+<ul>
+<li>Http client Agent maxSockets increased to 1000 to avoid request backlog on any given socket -  https://github.com/ql-io/ql.io/issues/512</li>
+<li>Fix https://github.com/ql-io/ql.io/issues/478</li>
+<li>Fix https://github.com/ql-io/ql.io/issues/13 Disable autorun in the console.</li>
+<li>Add file path/name to comiple errors</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -483,7 +552,7 @@ dependencies.</p>
   
 
 
-<span class="byline author vcard">Posted by <a href="http://github.com/shimonchayim">Cylus Penkar</a></span>
+<span class="byline author vcard">Posted by <a href="http://github.com/prabhakhar">Prabhakhar Kaliamurthy</a></span>
 
       </p>
     
@@ -675,56 +744,6 @@ complexity of such APIs.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2012/01/24/node-summit-slides.html">Slides From Node Summit</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-01-24T00:00:00-08:00" pubdate data-updated="true">Jan 24<span>th</span>, 2012</time>
-        
-         | <a href="/2012/01/24/node-summit-slides.html#disqus_thread">Comments</a>
-        
-      </p>
-      <p>
-        
-  
-
-
-<span class="byline author vcard">Posted by <a href="http://github.com/s3u">Subbu Allamaraju</a></span>
-
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Here are the slides from the workshop on ql.io at the Node Summit titled
-&#8220;ql.io: Consuming HTTP at Scale&#8221;.</p>
-
-<div style="width:425px" id="__ss_11244206"> <strong style="display:block;margin:12px 0 4px"><a href="http://www.slideshare.net/sallamar/qlio-consuming-http-at-scale" title="ql.io: Consuming HTTP at Scale " target="_blank">ql.io: Consuming HTTP at Scale </a></strong> <iframe src="http://www.slideshare.net/slideshow/embed_code/11244206" width="425" height="355" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe> <div style="padding:5px 0 12px"> View more <a href="http://www.slideshare.net/thecroaker/death-by-powerpoint" target="_blank">PowerPoint</a> from <a href="http://www.slideshare.net/sallamar" target="_blank">Subbu Allamaraju</a> </div> </div>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -738,6 +757,10 @@ complexity of such APIs.</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2012/06/29/ql.io-0.7.html">ql.io 0.7</a>
+      </li>
     
       <li class="post">
         <a href="/2012/06/08/plan.html">Evented Orchestration</a>
@@ -773,10 +796,6 @@ complexity of such APIs.</p>
     
       <li class="post">
         <a href="/2012/02/12/nodepdx-slides.html">Slides from NodePDX</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2012/01/24/node-summit-slides.html">Slides from Node Summit</a>
       </li>
     
   </ul>
