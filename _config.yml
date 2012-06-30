@@ -19,6 +19,10 @@ authors:
   cpenkar:
     display_name: Cylus Penkar
     github: shimonchayim
+  cpenkar:
+    display_name: Prabhakhar Kaliamurthy
+    gravater: c04306da9c1c7b2e140053a6326600b6
+    github: prabhakhar
 
 
 # Default date format is "ordinal" (resulting in "July 22nd 2007")
