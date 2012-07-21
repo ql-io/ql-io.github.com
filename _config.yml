@@ -23,7 +23,11 @@ authors:
     display_name: Prabhakhar Kaliamurthy
     gravater: c04306da9c1c7b2e140053a6326600b6
     github: prabhakhar
-
+  idralyuk:
+    display_name: Igor Dralyuk
+    gravatar: c6b3c9867982dba620c2dc816482f107
+    twitter: igorelli
+    github: idralyuk
 
 # Default date format is "ordinal" (resulting in "July 22nd 2007")
 # You can customize the format as defined in
